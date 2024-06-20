@@ -3,6 +3,7 @@ import { dirSync } from "tmp";
 import mkdirp from "mkdirp";
 import {
   __unsafe__use__it__at__your__own__risks__wrapDocument,
+  _unsafe_use_it_at_your_own_risk_v4_alpha_tt_wrapDocument,
   getData,
   isSchemaValidationError,
   SchemaId,
@@ -103,7 +104,14 @@ export const wrapIndividualDocuments = async (
     }
     try {
       let wrappedDocument: any;
-      if (version === SchemaId.v3) {
+      if (utils.isRawTTV4Document(document)) {
+        const digest = await _unsafe_use_it_at_your_own_risk_v4_alpha_tt_wrapDocument(document, {
+          externalSchemaId: schema?.$id,
+          version: SchemaId.tt_v4,
+        });
+        hashArray.push(utils.hashToBuffer(digest.proof.merkleRoot));
+        wrappedDocument = digest;
+      } else if (version === SchemaId.v3) {
         const digest = await __unsafe__use__it__at__your__own__risks__wrapDocument(document, {
           externalSchemaId: schema?.$id,
           version,
@@ -111,7 +119,7 @@ export const wrapIndividualDocuments = async (
         hashArray.push(utils.hashToBuffer(digest.proof.merkleRoot));
         wrappedDocument = digest;
       } else {
-        const digest = wrapDocument(document, { externalSchemaId: schema?.$id, version });
+        const digest = wrapDocument(document, { externalSchemaId: schema?.$id, version: SchemaId.v2 });
         hashArray.push(utils.hashToBuffer(digest.signature.merkleRoot));
         wrappedDocument = digest;
       }
@@ -276,7 +284,6 @@ export const wrap = async ({
     documentStore,
     templateUrl
   );
-
   if (!individualDocumentHashes || individualDocumentHashes.length === 0)
     throw new Error(`No documents found in ${inputPath}`);
 

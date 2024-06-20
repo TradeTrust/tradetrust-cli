@@ -1,0 +1,23 @@
+{
+  "@context": [
+    "https://www.w3.org/2018/credentials/v1",
+    "https://schemata.tradetrust.io/io/tradetrust/4.0/alpha-context.json"
+  ],
+  "type": ["VerifiableCredential", "TradeTrustCredential"],
+  "issuer": {
+    "id": "https://example.com",
+    "identityProof": {
+      "identityProofType": "IDVC",
+      "identifier": "My Own Company Pte Ltd"
+    }
+  },
+  "credentialSubject": {},
+  "credentialStatus": {
+    "type": "TradeTrustCredentialStatus",
+    "credentialStatusType": "NONE"
+  },
+  "network": {
+    "chain": "ETH",
+    "chainId": "11155111"
+  }
+}

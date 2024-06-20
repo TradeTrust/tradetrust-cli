@@ -1,0 +1,114 @@
+{
+  "@context": [
+    "https://www.w3.org/2018/credentials/v1",
+    "https://schemata.tradetrust.io/io/tradetrust/4.0/alpha-context.json"
+  ],
+  "type": ["VerifiableCredential", "TradeTrustCredential"],
+  "validFrom": "2021-03-08T12:00:00+08:00",
+  "issuer": {
+    "id": "did:ethr:0x433097a1C1b8a3e9188d8C54eCC057B1D69f1638",
+    "type": "TradeTrustIssuer",
+    "name": "My Own Company Pte Ltd",
+    "identityProof": {
+      "identityProofType": "IDVC",
+      "identityVC": {
+        "type": "TradeTrustIdentityVC",
+        "data": {
+          "@context": [
+            "https://www.w3.org/2018/credentials/v1",
+            "https://didrp-test.esatus.com/schemas/basic-did-lei-mapping/v1",
+            "https://w3id.org/security/bbs/v1",
+            "https://w3id.org/vc/status-list/2021/v1"
+          ],
+          "credentialStatus": {
+            "id": "https://didrp-test.esatus.com/credentials/statuslist/1#27934",
+            "statusListCredential": "https://didrp-test.esatus.com/credentials/statuslist/1",
+            "statusListIndex": 27934,
+            "statusPurpose": "revocation",
+            "type": "StatusList2021Entry"
+          },
+          "credentialSubject": {
+            "entityName": "IMDA_active",
+            "id": "did:ethr:0x433097a1C1b8a3e9188d8C54eCC057B1D69f1638",
+            "lei": "391200WCZAYD47QIKX37",
+            "type": ["BasicDIDLEIMapping"]
+          },
+          "issuanceDate": "2024-04-01T12:19:52Z",
+          "expirationDate": "2029-12-03T12:19:52Z",
+          "issuer": "did:web:didrp-test.esatus.com",
+          "type": ["VerifiableCredential"],
+          "proof": {
+            "type": "BbsBlsSignature2020",
+            "created": "2024-04-11T10:51:46Z",
+            "proofPurpose": "assertionMethod",
+            "proofValue": "uDqETewb6fwNzGgihIxUSdvTyncfEeIjowsj91O4qT2HsTLk4OUmkdreSY55d+SzYUHlKfzccE4m7waZyoLEkBLFiK2g54Q2i+CdtYBgDdkUDsoULSBMcH1MwGHwdjfXpldFNFrHFx/IAvLVniyeMQ==",
+            "verificationMethod": "did:web:didrp-test.esatus.com#keys-1"
+          }
+        }
+      }
+    }
+  },
+  "network": {
+    "chain": "NA",
+    "chainId": "NA"
+  },
+  "credentialStatus": {
+    "type": "TradeTrustCredentialStatus",
+    "credentialStatusType": "NONE"
+  },
+  "renderMethod": {
+    "type": "TradeTrustRenderMethod",
+    "renderMethodType": "EMBEDDED_RENDERER",
+    "name": "INVOICE",
+    "url": "https://generic-templates.tradetrust.io"
+  },
+  "credentialSubject": {
+    "name": "TradeTrust Invoice",
+    "id": "urn:uuid:a013fb9d-bb03-4056-b696-05575eceaf42",
+    "date": "2018-02-21",
+    "customerId": "564",
+    "terms": "Due Upon Receipt",
+    "billFrom": {
+      "name": "ABC Company",
+      "streetAddress": "Level 1, Industry Offices",
+      "city": "Singapore",
+      "postalCode": "123456",
+      "phoneNumber": "60305029"
+    },
+    "billTo": {
+      "company": {
+        "name": "DEF Company",
+        "streetAddress": "Level 2, Industry Offices",
+        "city": "Singapore",
+        "postalCode": "612345",
+        "phoneNumber": "61204028"
+      },
+      "name": "James Lee",
+      "email": "def@company.com"
+    },
+    "billableItems": [
+      {
+        "description": "Service Fee",
+        "quantity": "1",
+        "unitPrice": "200",
+        "amount": "200"
+      },
+      {
+        "description": "Labor: 5 hours at $75/hr",
+        "quantity": "5",
+        "unitPrice": "75",
+        "amount": "375"
+      },
+      {
+        "description": "New client discount",
+        "quantity": "1",
+        "unitPrice": "50",
+        "amount": "50"
+      }
+    ],
+    "subtotal": "625",
+    "tax": "0",
+    "taxTotal": "0",
+    "total": "625"
+  }
+}

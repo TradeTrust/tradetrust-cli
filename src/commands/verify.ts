@@ -6,6 +6,7 @@ import {
   openAttestationVerifiers,
   openAttestationDidIdentityProof,
   verificationBuilder,
+  tradeTrustIDVCIdentityProof,
 } from "@tradetrust-tt/tt-verify";
 import { readOpenAttestationFile } from "../implementations/utils/disk";
 import { withNetworkOption } from "./shared";
@@ -42,9 +43,12 @@ export const handler = async ({ document, network, verbose }: VerifyCommand): Pr
   };
   try {
     signale.await(`Verifying ${document}`);
-    const verify = verificationBuilder([...openAttestationVerifiers, openAttestationDidIdentityProof], {
-      provider: getSupportedNetwork(network).provider(),
-    });
+    const verify = verificationBuilder(
+      [...openAttestationVerifiers, openAttestationDidIdentityProof, tradeTrustIDVCIdentityProof],
+      {
+        provider: getSupportedNetwork(network).provider(),
+      }
+    );
     const fragments = await verify(readOpenAttestationFile(document));
     show(isValid(fragments), "The document is valid", "The document is not valid");
     if (verbose) {
