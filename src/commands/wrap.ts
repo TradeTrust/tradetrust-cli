@@ -37,11 +37,15 @@ export const builder = (yargs: Argv): Argv =>
     })
     .option("open-attestation-v2", {
       alias: "oav2",
-      conflicts: "open-attestation-v3",
+      conflicts: ["open-attestation-v3", "tradetrust-v4"],
     })
     .option("open-attestation-v3", {
       alias: "oav3",
-      conflicts: "open-attestation-v2",
+      conflicts: ["open-attestation-v2", "tradetrust-v4"],
+    })
+    .option("tradetrust-v4", {
+      alias: "ttv4",
+      conflicts: ["open-attestation-v2", "open-attestation-v3"],
     })
     .option("unwrap", {
       alias: "u",

@@ -1,4 +1,4 @@
-import { utils, v2, v3 } from "@tradetrust-tt/tradetrust";
+import { utils, v2, v3, TTv4 } from "@tradetrust-tt/tradetrust";
 import fs from "fs";
 import path from "path";
 import { info } from "signale";
@@ -53,7 +53,10 @@ export const create = async ({
   const hasDid = forms.some((form) => {
     //check form for v2/v3
     const didCheckList = ["DID", "DNS-DID"];
-    if (utils.isRawV3Document(form.defaults)) {
+    if (utils.isRawTTV4Document(form.defaults)) {
+      const v4Defaults = form.defaults as TTv4.TradeTrustDocument;
+      return didCheckList.includes(v4Defaults.issuer.identityProof.identityProofType);
+    } else if (utils.isRawV3Document(form.defaults)) {
       const v3Defaults = form.defaults as v3.OpenAttestationDocument;
       return didCheckList.includes(v3Defaults.openAttestationMetadata.proof.method);
     } else {

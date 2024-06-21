@@ -1,5 +1,5 @@
-import { utils, v2, v3 } from "@tradetrust-tt/tradetrust";
-import { updateFormV2, updateFormV3 } from "@tradetrust-tt/tradetrust-config";
+import { TTv4, utils, v2, v3 } from "@tradetrust-tt/tradetrust";
+import { updateFormV2, updateFormV3, updateFormV4 } from "@tradetrust-tt/tradetrust-config";
 import fetch from "node-fetch";
 import { success } from "signale";
 import { NetworkCmdName, supportedNetwork, networkCurrency } from "../../common/networks";
@@ -61,7 +61,18 @@ export const getConfigWithUpdatedForms = ({
   const { wallet, forms } = configFile;
 
   const updatedForms = forms.map((form: Form) => {
-    if (utils.isRawV3Document(form.defaults)) {
+    if (utils.isRawTTV4Document(form.defaults)) {
+      updateFormV4({
+        chain,
+        wallet,
+        form,
+        documentStoreAddress,
+        tokenRegistryAddress,
+        dnsVerifiable: dnsVerifiable || "",
+        dnsDid: dnsDid || "",
+        dnsTransferableRecord: dnsTransferableRecord || "",
+      });
+    } else if (utils.isRawV3Document(form.defaults)) {
       updateFormV3({
         chain,
         wallet,
@@ -151,9 +162,12 @@ export const validate = (forms: Form[]): boolean => {
     const isValidFormType = formTypeCheckList.includes(form.type);
     let isValidIdentityProofType: boolean;
 
-    const identityProofTypeCheckList = ["DNS-TXT", "DNS-DID", "DID"];
-    // test for v2/v3 form defaults
-    if (utils.isRawV3Document(form.defaults)) {
+    const identityProofTypeCheckList = ["DNS-TXT", "DNS-DID", "DID", "IDVC"];
+    // test for v2/v3/v4 form defaults
+    if (utils.isRawTTV4Document(form.defaults)) {
+      const v4Defaults = form.defaults as TTv4.TradeTrustDocument;
+      isValidIdentityProofType = identityProofTypeCheckList.includes(v4Defaults.issuer.identityProof.identityProofType);
+    } else if (utils.isRawV3Document(form.defaults)) {
       const v3Defaults = form.defaults as v3.OpenAttestationDocument;
       isValidIdentityProofType = identityProofTypeCheckList.includes(
         v3Defaults.openAttestationMetadata.identityProof.type

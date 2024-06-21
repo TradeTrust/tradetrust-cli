@@ -42,13 +42,21 @@ export const handler = async (
     if (filteredRecords.length > 0) {
       allRecords.push(...filteredRecords);
       signale.info("List of document store records:");
-      console.table(filteredRecords);
+      console.table(
+        filteredRecords.sort((a, b) => {
+          if (a.netId < b.netId) return -1;
+          if (a.netId > b.netId) return 1;
+          if (a.addr < b.addr) return -1;
+          if (a.addr > b.addr) return 1;
+          return 0;
+        })
+      );
     }
     const dnsDidRecords = await getDnsDidRecords(args.location);
     if (dnsDidRecords.length > 0) {
       allRecords.push(...dnsDidRecords);
       signale.info("List of dns-did records:");
-      console.table(dnsDidRecords);
+      console.table(dnsDidRecords.sort((a, b) => (a.publicKey < b.publicKey ? -1 : 1)));
     }
 
     if (allRecords.length === 0) {
