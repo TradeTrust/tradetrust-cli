@@ -92,14 +92,14 @@ export const supportedNetwork: {
   },
   [NetworkCmdName.HederaMainnet]: {
     explorer: "https://hashscan.io/mainnet",
-    provider: jsonRpcProvider("https://mainnet.hashio.io/api"),
+    provider: jsonRpcProvider("https://hedera-mainnet-json-rpc.krypc.com/"),
     networkId: 295,
     networkName: NetworkCmdName.HederaMainnet,
     currency: "HBAR",
   },
   [NetworkCmdName.HederaTestnet]: {
     explorer: "https://hashscan.io/testnet",
-    provider: jsonRpcProvider("https://testnet.hashio.io/api"),
+    provider: jsonRpcProvider("https://hedera-testnet-json-rpc.krypc.com/"),
     networkId: 296,
     networkName: NetworkCmdName.HederaTestnet,
     currency: "HBAR",
