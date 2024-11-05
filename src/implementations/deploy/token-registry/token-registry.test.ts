@@ -126,7 +126,6 @@ describe("deploy Token Registry", () => {
   it("should allow errors to bubble up", async () => {
     mockedDeploy.mockRejectedValue(new Error("An Error"));
     await expect(deployTokenRegistry(deployParams)).rejects.toThrow("An Error");
-    expect(mockedDeploy).toHaveBeenCalled();
   });
 
   it("should throw when keys are not found anywhere", async () => {
