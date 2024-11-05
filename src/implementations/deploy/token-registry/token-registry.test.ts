@@ -21,13 +21,18 @@ describe("deploy Token Registry", () => {
   mockedEthersContract.prototype.deploy = jest.fn();
   const mockedDeploy: jest.Mock = mockedEthersContract.prototype.deploy;
 
-  const factoryMock = jest.spyOn(TDocDeployer__factory, 'connect')
-  factoryMock.mockImplementation(() => ({
-    interface: {
-      getEventTopic: jest.fn().mockReturnValue("0x3588ebb5c75fdf91927f8472318f41513ee567c2612a5ce52ac840dcf6f162f5")
-    },
-    deploy: mockedDeploy
-  }) as any)
+  const factoryMock = jest.spyOn(TDocDeployer__factory, "connect");
+  factoryMock.mockImplementation(
+    () =>
+      ({
+        interface: {
+          getEventTopic: jest
+            .fn()
+            .mockReturnValue("0x3588ebb5c75fdf91927f8472318f41513ee567c2612a5ce52ac840dcf6f162f5"),
+        },
+        deploy: mockedDeploy,
+      } as any)
+  );
 
   // increase timeout because ethers is throttling
   jest.setTimeout(30000);
