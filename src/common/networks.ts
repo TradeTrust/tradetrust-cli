@@ -123,12 +123,12 @@ export const supportedNetwork: {
     gasStation: gasStation("https://free.testnet.stabilityprotocol.com/gas-station"),
   },
   [NetworkCmdName.Astron]: {
-    explorer: "http://astronscanl2.bitfactory.cn/",
-    provider: jsonRpcProvider("http://astronlayer2.bitfactory.cn:8545/"),
+    explorer: "https://astronscanl2.bitfactory.cn/",
+    provider: jsonRpcProvider("https://astronlayer2.bitfactory.cn/rpc/"),
     networkId: 1338,
     networkName: NetworkCmdName.Astron,
     currency: "ASTRON",
-    gasStation: gasStation("http://astronscanl2.bitfactory.cn/gas-station"),
+    gasStation: gasStation("https://astronscanl2.bitfactory.cn/gas-station"),
   },
 };
 
