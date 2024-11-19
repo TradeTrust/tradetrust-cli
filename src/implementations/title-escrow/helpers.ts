@@ -74,3 +74,11 @@ export const validateEndorseTransferOwner = ({
     throw new Error(error);
   }
 };
+
+export const validateRemarks = (remark: string) => {
+  if (remark.length > 120) {
+    const error = `Remark length is more than 120 characters`;
+    signale.error(error);
+    throw new Error(error);
+  }
+};

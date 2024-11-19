@@ -17,3 +17,7 @@ export type TitleEscrowEndorseTransferOfOwnersCommand = BaseTitleEscrowCommand &
 export type TitleEscrowNominateBeneficiaryCommand = BaseTitleEscrowCommand & {
   newBeneficiary: string;
 };
+
+export type TitleEscrowRejectTransferCommand = BaseTitleEscrowCommand & {
+  remark: string;
+};
