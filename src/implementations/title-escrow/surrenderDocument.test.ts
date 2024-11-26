@@ -7,6 +7,8 @@ import { surrenderDocument } from "./surrenderDocument";
 jest.mock("@tradetrust-tt/token-registry/contracts");
 
 const surrenderDocumentParams: TitleEscrowSurrenderDocumentCommand = {
+  remark: "remark",
+  encryptionKey: "encryptionKey",
   tokenRegistry: "0x1122",
   tokenId: "0x12345",
   network: "sepolia",

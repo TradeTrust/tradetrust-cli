@@ -1,8 +1,8 @@
 import signale from "signale";
 import { getLogger } from "../../logger";
 import { getWalletOrSigner } from "../utils/wallet";
-import { connectToTitleEscrow, validateNominateBeneficiary, validateRemarks } from "./helpers";
-import { TitleEscrowRejectTransferCommand } from "../../commands/title-escrow/title-escrow-command.type";
+import { connectToTitleEscrow, validateAndEncryptRemark, validatePreviousBeneficiary } from "./helpers";
+import { BaseTitleEscrowCommand as TitleEscrowRejectTransferCommand } from "../../commands/title-escrow/title-escrow-command.type";
 
 import { dryRunMode } from "../utils/dryRun";
 import { TransactionReceipt } from "@ethersproject/providers";
@@ -11,20 +11,22 @@ import { canEstimateGasPrice, getGasFees } from "../../utils";
 const { trace } = getLogger("title-escrow:rejectTransferOwner");
 
 export const rejectTransferOwner = async ({
+  remark,
+  encryptionKey,
   tokenRegistry: address,
   tokenId,
-  remark,
   network,
   dryRun,
   ...rest
 }: TitleEscrowRejectTransferCommand): Promise<TransactionReceipt> => {
   const wallet = await getWalletOrSigner({ network, ...rest });
   const titleEscrow = await connectToTitleEscrow({ tokenId, address, wallet });
-  await validateRemarks(remark);
+  const encryptedRemark = validateAndEncryptRemark(remark, encryptionKey);
+  await validatePreviousBeneficiary(titleEscrow);
   if (dryRun) {
-    await validateRemarks(remark);
+    await validatePreviousBeneficiary(titleEscrow);
     await dryRunMode({
-      estimatedGas: await titleEscrow.estimateGas.rejectTransferBeneficiary(remark),
+      estimatedGas: await titleEscrow.estimateGas.rejectTransferBeneficiary(encryptedRemark),
       network,
     });
     process.exit(0);
@@ -34,13 +36,14 @@ export const rejectTransferOwner = async ({
     const gasFees = await getGasFees({ provider: wallet.provider, ...rest });
     trace(`Gas maxFeePerGas: ${gasFees.maxFeePerGas}`);
     trace(`Gas maxPriorityFeePerGas: ${gasFees.maxPriorityFeePerGas}`);
-    await titleEscrow.callStatic.rejectTransferBeneficiary(remark);
+    console.log("titleEscrow", titleEscrow.callStatic);
+    await titleEscrow.callStatic.rejectTransferBeneficiary(encryptedRemark);
     signale.await(`Sending transaction to pool`);
-    transaction = await titleEscrow.rejectTransferBeneficiary(remark, { ...gasFees });
+    transaction = await titleEscrow.rejectTransferBeneficiary(encryptedRemark, { ...gasFees });
   } else {
-    await titleEscrow.callStatic.rejectTransferBeneficiary(remark);
+    await titleEscrow.callStatic.rejectTransferBeneficiary(encryptedRemark);
     signale.await(`Sending transaction to pool`);
-    transaction = await titleEscrow.rejectTransferBeneficiary(remark);
+    transaction = await titleEscrow.rejectTransferBeneficiary(encryptedRemark);
   }
 
   trace(`Tx hash: ${transaction.hash}`);

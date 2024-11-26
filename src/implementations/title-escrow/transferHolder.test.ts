@@ -8,6 +8,8 @@ jest.mock("@tradetrust-tt/token-registry/contracts");
 
 const transferHolderParams: TitleEscrowTransferHolderCommand = {
   newHolder: "0xabcd",
+  remark: "0xabcd",
+  encryptionKey: "1234",
   tokenId: "0xzyxw",
   tokenRegistry: "0x1234",
   network: "sepolia",

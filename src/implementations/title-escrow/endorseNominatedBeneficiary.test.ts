@@ -8,6 +8,8 @@ jest.mock("@tradetrust-tt/token-registry/contracts");
 
 const endorseNominatedBeneficiaryParams: TitleEscrowNominateBeneficiaryCommand = {
   tokenId: "0xzyxw",
+  remark: "remark",
+  encryptionKey: "1234",
   tokenRegistry: "0x1234",
   newBeneficiary: "0x1232",
   network: "sepolia",

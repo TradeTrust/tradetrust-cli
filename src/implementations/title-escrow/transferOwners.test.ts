@@ -10,6 +10,8 @@ const endorseChangeOwnersParams: TitleEscrowEndorseTransferOfOwnersCommand = {
   newHolder: "0xabcd",
   newOwner: "0fosui",
   tokenId: "0xzyxw",
+  remark: "0xabcd",
+  encryptionKey: "1234",
   tokenRegistry: "0x1234",
   network: "sepolia",
   maxPriorityFeePerGasScale: 1,

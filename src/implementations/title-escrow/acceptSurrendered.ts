@@ -7,21 +7,25 @@ import { dryRunMode } from "../utils/dryRun";
 import { TransactionReceipt } from "@ethersproject/providers";
 import { TradeTrustToken__factory } from "@tradetrust-tt/token-registry/dist/contracts";
 import { canEstimateGasPrice, getGasFees } from "../../utils";
+import { validateAndEncryptRemark } from "./helpers";
 
 const { trace } = getLogger("title-escrow:acceptSurrendered");
 
 export const acceptSurrendered = async ({
   tokenRegistry: address,
   tokenId,
+  remark,
+  encryptionKey,
   network,
   dryRun,
   ...rest
 }: TitleEscrowSurrenderDocumentCommand): Promise<TransactionReceipt> => {
   const wallet = await getWalletOrSigner({ network, ...rest });
+  const encryptedRemark = validateAndEncryptRemark(remark, encryptionKey);
   const tokenRegistryInstance = await TradeTrustToken__factory.connect(address, wallet);
   if (dryRun) {
     await dryRunMode({
-      estimatedGas: await tokenRegistryInstance.estimateGas.burn(tokenId, "0x"),
+      estimatedGas: await tokenRegistryInstance.estimateGas.burn(tokenId, encryptedRemark),
       network,
     });
     process.exit(0);
@@ -31,13 +35,13 @@ export const acceptSurrendered = async ({
     const gasFees = await getGasFees({ provider: wallet.provider, ...rest });
     trace(`Gas maxFeePerGas: ${gasFees.maxFeePerGas}`);
     trace(`Gas maxPriorityFeePerGas: ${gasFees.maxPriorityFeePerGas}`);
-    await tokenRegistryInstance.callStatic.burn(tokenId, "0x");
+    await tokenRegistryInstance.callStatic.burn(tokenId, encryptedRemark);
     signale.await(`Sending transaction to pool`);
-    transaction = await tokenRegistryInstance.burn(tokenId, "0x", { ...gasFees });
+    transaction = await tokenRegistryInstance.burn(tokenId, encryptedRemark, { ...gasFees });
   } else {
-    await tokenRegistryInstance.callStatic.burn(tokenId, "0x");
+    await tokenRegistryInstance.callStatic.burn(tokenId, encryptedRemark);
     signale.await(`Sending transaction to pool`);
-    transaction = await tokenRegistryInstance.burn(tokenId, "0x");
+    transaction = await tokenRegistryInstance.burn(tokenId, encryptedRemark);
   }
 
   trace(`Tx hash: ${transaction.hash}`);

@@ -1,7 +1,7 @@
 import { Argv } from "yargs";
 import { error, info, success, warn } from "signale";
 import { getLogger } from "../../logger";
-import { TitleEscrowRejectTransferCommand } from "./title-escrow-command.type";
+import { BaseTitleEscrowCommand as TitleEscrowRejectTransferCommand } from "./title-escrow-command.type";
 import { withGasPriceOption, withNetworkAndWalletSignerOption } from "../shared";
 import { displayTransactionPrice, getErrorMessage, getEtherscanAddress } from "../../utils";
 import { NetworkCmdName } from "../../common/networks";
@@ -32,7 +32,11 @@ export const builder = (yargs: Argv): Argv =>
           alias: "remark",
           description: "Remark for the rejection",
           type: "string",
-          demandOption: true,
+        })
+        .option("encryptionKey", {
+          alias: "key",
+          description: "Encryption key for the document",
+          type: "string",
         })
     )
   );

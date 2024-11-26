@@ -1,7 +1,7 @@
 import { Argv } from "yargs";
 import { error, info, success, warn } from "signale";
 import { getLogger } from "../../logger";
-import { TitleEscrowRejectTransferCommand } from "./title-escrow-command.type";
+import { BaseTitleEscrowCommand as TitleEscrowRejectTransferCommand } from "./title-escrow-command.type";
 import { withGasPriceOption, withNetworkAndWalletSignerOption } from "../shared";
 import { displayTransactionPrice, getErrorMessage, getEtherscanAddress } from "../../utils";
 import { NetworkCmdName } from "../../common/networks";
@@ -32,7 +32,11 @@ export const builder = (yargs: Argv): Argv =>
           alias: "remark",
           description: "Remark for the rejection",
           type: "string",
-          demandOption: true,
+        })
+        .option("encryptionKey", {
+          alias: "key",
+          description: "Encryption key for the document",
+          type: "string",
         })
     )
   );
@@ -46,6 +50,7 @@ export const handler = async (args: TitleEscrowRejectTransferCommand): Promise<v
     warn(
       `Please note that if you do not have the correct privileges to the transferable record, then this command will fail.`
     );
+    info("here");
     const transaction = await rejectTransferHolder(args);
     const network = args.network as NetworkCmdName;
     displayTransactionPrice(transaction, network);
@@ -53,6 +58,7 @@ export const handler = async (args: TitleEscrowRejectTransferCommand): Promise<v
     success(`Transferable record with hash ${args.tokenId}'s holder has been successfully rejected to previous holder`);
     info(`Find more details at ${getEtherscanAddress({ network: args.network })}/tx/${transactionHash}`);
   } catch (e) {
+    console.log(e);
     error(getErrorMessage(e));
   }
 };

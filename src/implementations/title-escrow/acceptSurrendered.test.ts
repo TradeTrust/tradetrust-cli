@@ -9,6 +9,8 @@ jest.mock("@tradetrust-tt/token-registry/contracts");
 const acceptSurrenderedDocumentParams: TitleEscrowSurrenderDocumentCommand = {
   tokenRegistry: "0x1122",
   tokenId: "0x12345",
+  remark: "remark",
+  encryptionKey: "encryptionKey",
   network: "sepolia",
   maxPriorityFeePerGasScale: 1,
   dryRun: false,

@@ -1,7 +1,7 @@
 import signale from "signale";
 import { getLogger } from "../../logger";
 import { getWalletOrSigner } from "../utils/wallet";
-import { connectToTitleEscrow } from "./helpers";
+import { connectToTitleEscrow, validateAndEncryptRemark } from "./helpers";
 import { BaseTitleEscrowCommand as TitleEscrowSurrenderDocumentCommand } from "../../commands/title-escrow/title-escrow-command.type";
 import { dryRunMode } from "../utils/dryRun";
 import { TransactionReceipt } from "@ethersproject/providers";
@@ -10,6 +10,8 @@ import { canEstimateGasPrice, getGasFees } from "../../utils";
 const { trace } = getLogger("title-escrow:surrenderDocument");
 
 export const surrenderDocument = async ({
+  remark,
+  encryptionKey,
   tokenRegistry: address,
   tokenId,
   network,
@@ -18,9 +20,10 @@ export const surrenderDocument = async ({
 }: TitleEscrowSurrenderDocumentCommand): Promise<TransactionReceipt> => {
   const wallet = await getWalletOrSigner({ network, ...rest });
   const titleEscrow = await connectToTitleEscrow({ tokenId, address, wallet });
+  const encryptedRemark = validateAndEncryptRemark(remark, encryptionKey);
   if (dryRun) {
     await dryRunMode({
-      estimatedGas: await titleEscrow.estimateGas.returnToIssuer("0x"),
+      estimatedGas: await titleEscrow.estimateGas.returnToIssuer(encryptedRemark),
       network,
     });
     process.exit(0);
@@ -31,13 +34,13 @@ export const surrenderDocument = async ({
     const gasFees = await getGasFees({ provider: wallet.provider, ...rest });
     trace(`Gas maxFeePerGas: ${gasFees.maxFeePerGas}`);
     trace(`Gas maxPriorityFeePerGas: ${gasFees.maxPriorityFeePerGas}`);
-    await titleEscrow.callStatic.returnToIssuer("0x");
+    await titleEscrow.callStatic.returnToIssuer(encryptedRemark);
     signale.await(`Sending transaction to pool`);
-    transaction = await titleEscrow.returnToIssuer("0x", { ...gasFees });
+    transaction = await titleEscrow.returnToIssuer(encryptedRemark, { ...gasFees });
   } else {
-    await titleEscrow.callStatic.returnToIssuer("0x");
+    await titleEscrow.callStatic.returnToIssuer(encryptedRemark);
     signale.await(`Sending transaction to pool`);
-    transaction = await titleEscrow.returnToIssuer("0x");
+    transaction = await titleEscrow.returnToIssuer(encryptedRemark);
   }
 
   trace(`Tx hash: ${transaction.hash}`);

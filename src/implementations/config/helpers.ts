@@ -10,6 +10,7 @@ import { highlight } from "../../utils";
 import { ConfigFile, Dns, Form } from "./types";
 import { Wallet } from "ethers";
 import { ConnectedSigner } from "../utils/wallet";
+import { CHAIN_ID } from "@trustvc/trustvc";
 
 interface ConfigWithNetwork {
   configFile: ConfigFile;
@@ -63,7 +64,7 @@ export const getConfigWithUpdatedForms = ({
   const updatedForms = forms.map((form: Form) => {
     if (utils.isRawV3Document(form.defaults)) {
       updateFormV3({
-        chain,
+        chain: chain as any,
         wallet,
         form,
         documentStoreAddress,
@@ -74,7 +75,7 @@ export const getConfigWithUpdatedForms = ({
       });
     } else {
       updateFormV2({
-        chain,
+        chain: chain as any,
         wallet,
         form,
         documentStoreAddress,
