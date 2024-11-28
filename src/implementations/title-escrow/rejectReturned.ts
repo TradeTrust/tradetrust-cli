@@ -2,15 +2,15 @@ import { TradeTrustToken, TradeTrustToken__factory } from "@tradetrust-tt/token-
 import signale from "signale";
 import { getLogger } from "../../logger";
 import { getWalletOrSigner } from "../utils/wallet";
-import { BaseTitleEscrowCommand as TitleEscrowSurrenderDocumentCommand } from "../../commands/title-escrow/title-escrow-command.type";
+import { BaseTitleEscrowCommand as TitleEscrowReturnDocumentCommand } from "../../commands/title-escrow/title-escrow-command.type";
 import { dryRunMode } from "../utils/dryRun";
 import { TransactionReceipt } from "@ethersproject/providers";
 import { canEstimateGasPrice, getGasFees } from "../../utils";
 import { validateAndEncryptRemark } from "./helpers";
 
-const { trace } = getLogger("title-escrow:acceptSurrendered");
+const { trace } = getLogger("title-escrow:acceptReturned");
 
-export const rejectSurrendered = async ({
+export const rejectReturned = async ({
   tokenRegistry: address,
   tokenId,
   remark,
@@ -18,7 +18,7 @@ export const rejectSurrendered = async ({
   network,
   dryRun,
   ...rest
-}: TitleEscrowSurrenderDocumentCommand): Promise<TransactionReceipt> => {
+}: TitleEscrowReturnDocumentCommand): Promise<TransactionReceipt> => {
   const wallet = await getWalletOrSigner({ network, ...rest });
   const tokenRegistryInstance: TradeTrustToken = await TradeTrustToken__factory.connect(address, wallet);
   const encryptedRemark = validateAndEncryptRemark(remark, encryptionKey);
