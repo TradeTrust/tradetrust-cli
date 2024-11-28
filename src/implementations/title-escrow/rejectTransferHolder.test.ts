@@ -80,10 +80,15 @@ describe("title-escrow", () => {
       expect(mockRejectTransferHolder).toHaveBeenCalledTimes(1);
     });
     it("should throw error if remark is longer than 120 characters", async () => {
-      await rejectTransferHolder({
-        ...transferHolderParams,
-        remark: "0xabcd".repeat(31),
-      });
+      const privateKey = "0000000000000000000000000000000000000000000000000000000000000001";
+
+      await expect(
+        rejectTransferHolder({
+          ...transferHolderParams,
+          remark: "0xabcd".repeat(31),
+          key: privateKey,
+        })
+      ).rejects.toThrowErrorMatchingInlineSnapshot(`"Remark length is more than 120 characters"`);
 
       expect(mockCallStaticRejectTransferHolder).toHaveBeenCalledTimes(0);
     });

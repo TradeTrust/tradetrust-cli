@@ -21,10 +21,8 @@ export const rejectTransferHolder = async ({
 }: TitleEscrowRejectTransferCommand): Promise<TransactionReceipt> => {
   const wallet = await getWalletOrSigner({ network, ...rest });
   const titleEscrow = await connectToTitleEscrow({ tokenId, address, wallet });
-  console.log("here 1");
   const encryptedRemark = validateAndEncryptRemark(remark);
   await validatePreviousHolder(titleEscrow);
-  console.log("here 2");
   if (dryRun) {
     await validatePreviousHolder(titleEscrow);
     await dryRunMode({
@@ -38,9 +36,7 @@ export const rejectTransferHolder = async ({
     const gasFees = await getGasFees({ provider: wallet.provider, ...rest });
     trace(`Gas maxFeePerGas: ${gasFees.maxFeePerGas}`);
     trace(`Gas maxPriorityFeePerGas: ${gasFees.maxPriorityFeePerGas}`);
-    console.log("here 3");
     await titleEscrow.callStatic.rejectTransferHolder(encryptedRemark);
-    console.log("here 4");
     signale.await(`Sending transaction to pool`);
     transaction = await titleEscrow.rejectTransferHolder(encryptedRemark, { ...gasFees });
   } else {
