@@ -106,17 +106,18 @@ export const deployTokenRegistry = async ({
       tx = await deployerContract.deploy(implAddress, initParam);
     }
     trace(`[Transaction] Pending ${tx.hash}`);
-    const receipt = await tx.wait();
-    const registryAddress = getEventFromReceipt<DeploymentEvent>(
+    const receipt: TransactionReceipt = await tx.wait();
+    const registryAddress = getEventFromReceipt<any>(
       receipt,
-      deployerContract.interface.getEventTopic("Deployment")
+      (deployerContract.interface as any).getEventTopic("Deployment"),
+      deployerContract.interface
     ).args.deployed;
     return { transaction: receipt, contractAddress: registryAddress };
   } else {
     // Standalone deployment
     const tokenFactory = new TradeTrustToken__factory(wallet);
     if (dryRun) {
-      const transactionRequest = tokenFactory.getDeployTransaction(registryName, registrySymbol, factoryAddress);
+      const transactionRequest = await tokenFactory.getDeployTransaction(registryName, registrySymbol, factoryAddress);
       const estimatedGas = await wallet.estimateGas(transactionRequest);
       await dryRunMode({
         estimatedGas,

@@ -4,6 +4,7 @@ import { Contract } from "ethers";
 import { DeployTokenRegistryCommand } from "../../../commands/deploy/deploy.types";
 import { encodeInitParams } from "./helpers";
 import { deployTokenRegistry } from "./token-registry";
+import { contractAddress } from "@tradetrust-tt/token-registry/dist/types/constants";
 
 const deployParams: DeployTokenRegistryCommand = {
   registryName: "Test",
@@ -29,11 +30,70 @@ describe("deploy Token Registry", () => {
           getEventTopic: jest
             .fn()
             .mockReturnValue("0x3588ebb5c75fdf91927f8472318f41513ee567c2612a5ce52ac840dcf6f162f5"),
+          parseLog: jest.fn().mockReturnValue({
+            fragment: {
+              type: "event",
+              inputs: [
+                {
+                  name: "deployed",
+                  type: "address",
+                  baseType: "address",
+                  indexed: true,
+                  components: null,
+                  arrayLength: null,
+                  arrayChildren: null,
+                },
+                {
+                  name: "implementation",
+                  type: "address",
+                  baseType: "address",
+                  indexed: true,
+                  components: null,
+                  arrayLength: null,
+                  arrayChildren: null,
+                },
+                {
+                  name: "deployer",
+                  type: "address",
+                  baseType: "address",
+                  indexed: true,
+                  components: null,
+                  arrayLength: null,
+                  arrayChildren: null,
+                },
+                {
+                  name: "titleEscrowFactory",
+                  type: "address",
+                  baseType: "address",
+                  indexed: false,
+                  components: null,
+                  arrayLength: null,
+                  arrayChildren: null,
+                },
+                {
+                  name: "params",
+                  type: "bytes",
+                  baseType: "bytes",
+                  indexed: false,
+                  components: null,
+                  arrayLength: null,
+                  arrayChildren: null,
+                },
+              ],
+              name: "Deployment",
+              anonymous: false,
+            },
+            name: "Deployment",
+            signature: "Deployment(address,address,address,address,bytes)",
+            topic: "0x3588ebb5c75fdf91927f8472318f41513ee567c2612a5ce52ac840dcf6f162f5",
+            args: {
+              deployed: "0x4b1706483c1db1163c4682cea0c7ab8fc136fe3d",
+            },
+          }),
         },
         deploy: mockedDeploy,
       } as any)
   );
-
   // increase timeout because ethers is throttling
   jest.setTimeout(30000);
 
@@ -74,7 +134,6 @@ describe("deploy Token Registry", () => {
       symbol: deployParams.registrySymbol,
       deployer: "0x7E5F4552091A69125d5DfCb7b8C2659029395Bdf",
     });
-
     expect(mockedDeploy.mock.calls[0][0]).toEqual("0x4B1706483C1Db1163c4682cEa0c7AB8fC136Fe3D");
     expect(mockedDeploy.mock.calls[0][1]).toEqual(expectedInitParams);
 
@@ -89,13 +148,11 @@ describe("deploy Token Registry", () => {
       ...deployParams,
     };
     await deployTokenRegistry(deployStandalone);
-
     const expectedInitParams = encodeInitParams({
       name: deployParams.registryName,
       symbol: deployParams.registrySymbol,
       deployer: "0x7E5F4552091A69125d5DfCb7b8C2659029395Bdf",
     });
-
     expect(mockedDeploy.mock.calls[0][0]).toEqual("0x4B1706483C1Db1163c4682cEa0c7AB8fC136Fe3D");
     expect(mockedDeploy.mock.calls[0][1]).toEqual(expectedInitParams);
 

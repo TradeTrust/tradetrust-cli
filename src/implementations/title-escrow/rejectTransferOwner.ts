@@ -36,7 +36,6 @@ export const rejectTransferOwner = async ({
     const gasFees = await getGasFees({ provider: wallet.provider, ...rest });
     trace(`Gas maxFeePerGas: ${gasFees.maxFeePerGas}`);
     trace(`Gas maxPriorityFeePerGas: ${gasFees.maxPriorityFeePerGas}`);
-    console.log("titleEscrow", titleEscrow.callStatic);
     await titleEscrow.callStatic.rejectTransferBeneficiary(encryptedRemark);
     signale.await(`Sending transaction to pool`);
     transaction = await titleEscrow.rejectTransferBeneficiary(encryptedRemark, { ...gasFees });

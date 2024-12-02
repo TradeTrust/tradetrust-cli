@@ -79,5 +79,19 @@ describe("title-escrow", () => {
       expect(mockCallStaticRejectTransferOwner).toHaveBeenCalledTimes(1);
       expect(mockRejectTransferOwner).toHaveBeenCalledTimes(1);
     });
+    it("should throw error if previous owner is not available", async () => {
+      const privateKey = "0000000000000000000000000000000000000000000000000000000000000001";
+      mockGetPrevBeneficiary.mockReturnValue("0x0000000000000000000000000000000000000000");
+
+      await expect(
+        rejectTransferOwner({
+          ...transferOwnerParams,
+          remark: "0xabcd",
+          key: privateKey,
+        })
+      ).rejects.toThrowErrorMatchingInlineSnapshot(`"invalid rejection as previous beneficiary is not set"`);
+
+      expect(mockCallStaticRejectTransferOwner).toHaveBeenCalledTimes(0);
+    });
   });
 });
