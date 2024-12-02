@@ -1,16 +1,15 @@
 import { utils, v2, v3 } from "@tradetrust-tt/tradetrust";
 import { updateFormV2, updateFormV3 } from "@tradetrust-tt/tradetrust-config";
+import { Wallet } from "ethers";
 import fetch from "node-fetch";
 import { success } from "signale";
-import { NetworkCmdName, supportedNetwork, networkCurrency } from "../../common/networks";
+import { NetworkCmdName, networkCurrency, supportedNetwork } from "../../common/networks";
+import { highlight } from "../../utils";
 import { deployDocumentStore } from "../deploy/document-store";
 import { deployTokenRegistry } from "../deploy/token-registry";
 import { readFile } from "../utils/disk";
-import { highlight } from "../../utils";
-import { ConfigFile, Dns, Form } from "./types";
-import { Wallet } from "ethers";
 import { ConnectedSigner } from "../utils/wallet";
-import { CHAIN_ID } from "@trustvc/trustvc";
+import { ConfigFile, Dns, Form } from "./types";
 
 interface ConfigWithNetwork {
   configFile: ConfigFile;

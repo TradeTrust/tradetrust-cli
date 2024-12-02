@@ -31,26 +31,9 @@ describe("title-escrow", () => {
     const mockRejectTransferHolder = jest.fn();
     const mockCallStaticRejectTransferHolder = jest.fn().mockResolvedValue(undefined);
     const mockedTitleEscrowAddress = "0x2133";
-    mockedOwnerOf.mockReturnValue(mockedTitleEscrowAddress);
-    mockRejectTransferHolder.mockReturnValue({
-      hash: "hash",
-      wait: () => Promise.resolve({ transactionHash: "transactionHash" }),
-    });
 
     const mockedPrevHolder = "0xdssfs";
     const mockGetPrevHolder = jest.fn();
-    mockGetPrevHolder.mockReturnValue(mockedPrevHolder);
-
-    mockedConnectERC721.mockReturnValue({
-      ownerOf: mockedOwnerOf,
-    });
-    mockedConnectTokenFactory.mockReturnValue({
-      prevHolder: mockGetPrevHolder,
-      rejectTransferHolder: mockRejectTransferHolder,
-      callStatic: {
-        rejectTransferHolder: mockCallStaticRejectTransferHolder,
-      },
-    });
 
     beforeEach(() => {
       delete process.env.OA_PRIVATE_KEY;
@@ -61,6 +44,24 @@ describe("title-escrow", () => {
       mockedOwnerOf.mockClear();
       mockRejectTransferHolder.mockClear();
       mockCallStaticRejectTransferHolder.mockClear();
+
+      mockedOwnerOf.mockReturnValue(mockedTitleEscrowAddress);
+      mockRejectTransferHolder.mockReturnValue({
+        hash: "hash",
+        wait: () => Promise.resolve({ transactionHash: "transactionHash" }),
+      });
+      mockGetPrevHolder.mockReturnValue(mockedPrevHolder);
+
+      mockedConnectERC721.mockReturnValue({
+        ownerOf: mockedOwnerOf,
+      });
+      mockedConnectTokenFactory.mockReturnValue({
+        prevHolder: mockGetPrevHolder,
+        rejectTransferHolder: mockRejectTransferHolder,
+        callStatic: {
+          rejectTransferHolder: mockCallStaticRejectTransferHolder,
+        },
+      });
     });
 
     it("should pass in the correct params and call the following procedures to invoke a reject holder of a transferable record", async () => {

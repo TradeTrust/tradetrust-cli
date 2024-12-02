@@ -20,7 +20,6 @@ export const transferHolder = async ({
   dryRun,
   ...rest
 }: TitleEscrowTransferHolderCommand): Promise<TransactionReceipt> => {
-  console.log(to, remark);
   const wallet = await getWalletOrSigner({ network, ...rest });
   const titleEscrow = await connectToTitleEscrow({ tokenId, address, wallet });
   const encryptedRemark = validateAndEncryptRemark(remark, encryptionKey);
@@ -33,20 +32,16 @@ export const transferHolder = async ({
   }
   let transaction;
   if (canEstimateGasPrice(network)) {
-    console.log("here1");
     const gasFees = await getGasFees({ provider: wallet.provider, ...rest });
     trace(`Gas maxFeePerGas: ${gasFees.maxFeePerGas}`);
     trace(`Gas maxPriorityFeePerGas: ${gasFees.maxPriorityFeePerGas}`);
     await titleEscrow.callStatic.transferHolder(to, encryptedRemark);
     signale.await(`Sending transaction to pool`);
     transaction = await titleEscrow.transferHolder(to, encryptedRemark, { ...gasFees });
-    console.log("here2");
   } else {
-    console.log("here3");
     await titleEscrow.callStatic.transferHolder(to, encryptedRemark);
     signale.await(`Sending transaction to pool`);
     transaction = await titleEscrow.transferHolder(to, encryptedRemark);
-    console.log("here4");
   }
   trace(`Tx hash: ${transaction.hash}`);
   trace(`Block Number: ${transaction.blockNumber}`);
