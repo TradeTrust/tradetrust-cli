@@ -31,26 +31,9 @@ describe("title-escrow", () => {
     const mockRejectTransferOwner = jest.fn();
     const mockCallStaticRejectTransferOwner = jest.fn().mockResolvedValue(undefined);
     const mockedTitleEscrowAddress = "0x2133";
-    mockedOwnerOf.mockReturnValue(mockedTitleEscrowAddress);
-    mockRejectTransferOwner.mockReturnValue({
-      hash: "hash",
-      wait: () => Promise.resolve({ transactionHash: "transactionHash" }),
-    });
 
     const mockedPrevBeneficiary = "0xdssfs";
     const mockGetPrevBeneficiary = jest.fn();
-    mockGetPrevBeneficiary.mockReturnValue(mockedPrevBeneficiary);
-
-    mockedConnectERC721.mockReturnValue({
-      ownerOf: mockedOwnerOf,
-    });
-    mockedConnectTokenFactory.mockReturnValue({
-      prevBeneficiary: mockGetPrevBeneficiary,
-      rejectTransferBeneficiary: mockRejectTransferOwner,
-      callStatic: {
-        rejectTransferBeneficiary: mockCallStaticRejectTransferOwner,
-      },
-    });
 
     beforeEach(() => {
       delete process.env.OA_PRIVATE_KEY;
@@ -61,6 +44,24 @@ describe("title-escrow", () => {
       mockedOwnerOf.mockClear();
       mockRejectTransferOwner.mockClear();
       mockCallStaticRejectTransferOwner.mockClear();
+
+      mockedOwnerOf.mockReturnValue(mockedTitleEscrowAddress);
+      mockRejectTransferOwner.mockReturnValue({
+        hash: "hash",
+        wait: () => Promise.resolve({ transactionHash: "transactionHash" }),
+      });
+      mockGetPrevBeneficiary.mockReturnValue(mockedPrevBeneficiary);
+
+      mockedConnectERC721.mockReturnValue({
+        ownerOf: mockedOwnerOf,
+      });
+      mockedConnectTokenFactory.mockReturnValue({
+        prevBeneficiary: mockGetPrevBeneficiary,
+        rejectTransferBeneficiary: mockRejectTransferOwner,
+        callStatic: {
+          rejectTransferBeneficiary: mockCallStaticRejectTransferOwner,
+        },
+      });
     });
 
     it("should pass in the correct params and call the following procedures to invoke a reject owner of a transferable record", async () => {

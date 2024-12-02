@@ -77,7 +77,7 @@
     "@tradetrust-tt/tradetrust": "^6.9.6",
     "@tradetrust-tt/tradetrust-config": "^1.14.1",
     "@tradetrust-tt/tt-verify": "^8.9.1",
-    "@trustvc/trustvc": "^1.0.0-alpha.11",
+    "@trustvc/trustvc": "^1.0.0-alpha.12",
     "ajv": "^8.4.0",
     "ajv-formats": "^2.1.0",
     "chalk": "^4.1.2",

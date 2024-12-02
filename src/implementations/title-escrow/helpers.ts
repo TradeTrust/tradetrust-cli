@@ -100,6 +100,6 @@ export const validateAndEncryptRemark = (remark?: string, keyId?: string): Bytes
     signale.error(error);
     throw new Error(error);
   }
-  return encrypt(remark ?? "", keyId ?? "");
+  return encrypt(remark ?? " ", keyId ?? "");
   // return "0x1234";
 };

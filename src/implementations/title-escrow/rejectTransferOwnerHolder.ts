@@ -26,7 +26,7 @@ export const rejectTransferOwnerHolder = async ({
 }: TitleEscrowRejectTransferCommand): Promise<TransactionReceipt> => {
   const wallet = await getWalletOrSigner({ network, ...rest });
   const titleEscrow = await connectToTitleEscrow({ tokenId, address, wallet });
-  const encryptedRemark = await validateAndEncryptRemark(remark);
+  const encryptedRemark = validateAndEncryptRemark(remark, encryptionKey);
   await validatePreviousHolder(titleEscrow);
   await validatePreviousBeneficiary(titleEscrow);
   if (dryRun) {

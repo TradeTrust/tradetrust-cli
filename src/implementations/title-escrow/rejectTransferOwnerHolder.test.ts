@@ -31,31 +31,12 @@ describe("title-escrow", () => {
     const mockRejectTransferOwnerHolder = jest.fn();
     const mockCallStaticRejectTransferOwnerHolder = jest.fn().mockResolvedValue(undefined);
     const mockedTitleEscrowAddress = "0x2133";
-    mockedOwnerOf.mockReturnValue(mockedTitleEscrowAddress);
-    mockRejectTransferOwnerHolder.mockReturnValue({
-      hash: "hash",
-      wait: () => Promise.resolve({ transactionHash: "transactionHash" }),
-    });
 
     const mockedPrevBeneficiary = "0xdssfs";
     const mockGetPrevBeneficiary = jest.fn();
-    mockGetPrevBeneficiary.mockReturnValue(mockedPrevBeneficiary);
 
     const mockedPrevHolder = "0xdssfs";
     const mockGetPrevHolder = jest.fn();
-    mockGetPrevHolder.mockReturnValue(mockedPrevHolder);
-
-    mockedConnectERC721.mockReturnValue({
-      ownerOf: mockedOwnerOf,
-    });
-    mockedConnectTokenFactory.mockReturnValue({
-      prevBeneficiary: mockGetPrevBeneficiary,
-      prevHolder: mockGetPrevHolder,
-      rejectTransferOwners: mockRejectTransferOwnerHolder,
-      callStatic: {
-        rejectTransferOwners: mockCallStaticRejectTransferOwnerHolder,
-      },
-    });
 
     beforeEach(() => {
       delete process.env.OA_PRIVATE_KEY;
@@ -66,6 +47,26 @@ describe("title-escrow", () => {
       mockedOwnerOf.mockClear();
       mockRejectTransferOwnerHolder.mockClear();
       mockCallStaticRejectTransferOwnerHolder.mockClear();
+
+      mockedOwnerOf.mockReturnValue(mockedTitleEscrowAddress);
+      mockRejectTransferOwnerHolder.mockReturnValue({
+        hash: "hash",
+        wait: () => Promise.resolve({ transactionHash: "transactionHash" }),
+      });
+      mockGetPrevBeneficiary.mockReturnValue(mockedPrevBeneficiary);
+      mockGetPrevHolder.mockReturnValue(mockedPrevHolder);
+
+      mockedConnectERC721.mockReturnValue({
+        ownerOf: mockedOwnerOf,
+      });
+      mockedConnectTokenFactory.mockReturnValue({
+        prevBeneficiary: mockGetPrevBeneficiary,
+        prevHolder: mockGetPrevHolder,
+        rejectTransferOwners: mockRejectTransferOwnerHolder,
+        callStatic: {
+          rejectTransferOwners: mockCallStaticRejectTransferOwnerHolder,
+        },
+      });
     });
 
     it("should pass in the correct params and call the following procedures to invoke a reject OwnerHolder of a transferable record", async () => {

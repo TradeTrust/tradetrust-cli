@@ -40,7 +40,7 @@ export const builder = (yargs: Argv): Argv =>
           type: "string",
         })
         .option("encryptionKey", {
-          alias: "key",
+          alias: "encryptionKey",
           description: "Encryption key for the document",
           type: "string",
         })
