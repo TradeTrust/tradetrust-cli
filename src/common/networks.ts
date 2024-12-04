@@ -2,7 +2,7 @@ import { providers } from "ethers";
 import type { GasStationFunction } from "./gas-station";
 import { gasStation } from "./gas-station";
 
-export type networkCurrency = "ETH" | "MATIC" | "XDC" | "FREE";
+export type networkCurrency = "ETH" | "MATIC" | "XDC" | "FREE" | "ASTRON";
 
 type SupportedNetwork = {
   explorer: string;
@@ -23,6 +23,7 @@ export enum NetworkCmdName {
   XDCApothem = "xdcapothem",
   StabilityTestnet = "stabilitytestnet",
   Stability = "stability",
+  Astron = "astron",
 }
 
 const defaultInfuraProvider =
@@ -104,6 +105,14 @@ export const supportedNetwork: {
     networkName: NetworkCmdName.StabilityTestnet,
     currency: "FREE",
     gasStation: gasStation("https://free.testnet.stabilityprotocol.com/gas-station"),
+  },
+  [NetworkCmdName.Astron]: {
+    explorer: "https://astronscanl2.bitfactory.cn/",
+    provider: jsonRpcProvider("https://astronlayer2.bitfactory.cn/rpc/"),
+    networkId: 1338,
+    networkName: NetworkCmdName.Astron,
+    currency: "ASTRON",
+    gasStation: gasStation("https://astronscanl2.bitfactory.cn/gas-station"),
   },
 };
 
