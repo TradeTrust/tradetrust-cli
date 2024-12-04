@@ -35,23 +35,26 @@ describe("title-escrow", () => {
     const mockedHolder = "0xdsfls";
     const mockGetBeneficiary = jest.fn();
     const mockGetHolder = jest.fn();
-    mockGetBeneficiary.mockReturnValue(mockedBeneficiary);
-    mockGetHolder.mockReturnValue(mockedHolder);
-    mockedConnectERC721.mockReturnValue({
-      ownerOf: mockedOwnerOf,
-    });
-    mockedConnectTokenFactory.mockReturnValue({
-      transferOwners: mockTransferOwners,
-      beneficiary: mockGetBeneficiary,
-      holder: mockGetHolder,
-      callStatic: {
-        transferOwners: mockCallStaticTransferOwners,
-      },
-    });
-    mockedOwnerOf.mockReturnValue(mockedTitleEscrowAddress);
-    mockTransferOwners.mockReturnValue({
-      hash: "hash",
-      wait: () => Promise.resolve({ transactionHash: "transactionHash" }),
+
+    beforeAll(() => {
+      mockGetBeneficiary.mockReturnValue(mockedBeneficiary);
+      mockGetHolder.mockReturnValue(mockedHolder);
+      mockedConnectERC721.mockReturnValue({
+        ownerOf: mockedOwnerOf,
+      });
+      mockedConnectTokenFactory.mockReturnValue({
+        transferOwners: mockTransferOwners,
+        beneficiary: mockGetBeneficiary,
+        holder: mockGetHolder,
+        callStatic: {
+          transferOwners: mockCallStaticTransferOwners,
+        },
+      });
+      mockedOwnerOf.mockReturnValue(mockedTitleEscrowAddress);
+      mockTransferOwners.mockReturnValue({
+        hash: "hash",
+        wait: () => Promise.resolve({ transactionHash: "transactionHash" }),
+      });
     });
 
     beforeEach(() => {
