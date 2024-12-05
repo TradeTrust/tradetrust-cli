@@ -39,6 +39,16 @@ export const builder = (yargs: Argv): Argv =>
           type: "string",
           demandOption: true,
         })
+        .option("remark", {
+          alias: "remark",
+          description: "Remark for the change of owner",
+          type: "string",
+        })
+        .option("encryptionKey", {
+          alias: "encryptionKey",
+          description: "Encryption key for the document",
+          type: "string",
+        })
     )
   );
 

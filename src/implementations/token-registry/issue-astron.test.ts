@@ -27,17 +27,19 @@ describe("token-registry", () => {
     const mockedIssue = jest.fn();
     const mockCallStaticSafeMint = jest.fn().mockResolvedValue(undefined);
 
-    mockedIssue.mockReturnValue({
-      hash: "hash",
-      wait: () => Promise.resolve({ transactionHash: "transactionHash" }),
-    });
-
     const mockTtErc721Contract = {
       mint: mockedIssue,
       callStatic: {
         mint: mockCallStaticSafeMint,
       },
     };
+
+    beforeAll(() => {
+      mockedIssue.mockReturnValue({
+        hash: "hash",
+        wait: () => Promise.resolve({ transactionHash: "transactionHash" }),
+      });
+    });
 
     beforeEach(() => {
       delete process.env.OA_PRIVATE_KEY;

@@ -11,6 +11,8 @@ const deployParams: TokenRegistryIssueCommand = {
   beneficiary: "0xabcd",
   holder: "0xabce",
   tokenId: "0xzyxw",
+  remark: "remark",
+  encryptionKey: "0x1234",
   address: "0x1234",
   network: "sepolia",
   maxPriorityFeePerGasScale: 1,
@@ -27,11 +29,6 @@ describe("token-registry", () => {
     const mockedIssue = jest.fn();
     const mockCallStaticSafeMint = jest.fn().mockResolvedValue(undefined);
 
-    mockedIssue.mockReturnValue({
-      hash: "hash",
-      wait: () => Promise.resolve({ transactionHash: "transactionHash" }),
-    });
-
     const mockTtErc721Contract = {
       mint: mockedIssue,
       callStatic: {
@@ -45,8 +42,12 @@ describe("token-registry", () => {
       mockCallStaticSafeMint.mockClear();
       mockedConnectERC721.mockReset();
       mockedConnectERC721.mockResolvedValue(mockTtErc721Contract);
-    });
 
+      mockedIssue.mockReturnValue({
+        hash: "hash",
+        wait: () => Promise.resolve({ transactionHash: "transactionHash" }),
+      });
+    });
     it("should pass in the correct params and return the deployed instance", async () => {
       const privateKey = "0000000000000000000000000000000000000000000000000000000000000001";
       const instance = await issueToTokenRegistry({

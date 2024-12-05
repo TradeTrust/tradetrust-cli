@@ -30,19 +30,22 @@ describe("title-escrow", () => {
     const mockTransferHolder = jest.fn();
     const mockCallStaticTransferHolder = jest.fn().mockResolvedValue(undefined);
     const mockedTitleEscrowAddress = "0x2133";
-    mockedOwnerOf.mockReturnValue(mockedTitleEscrowAddress);
-    mockTransferHolder.mockReturnValue({
-      hash: "hash",
-      wait: () => Promise.resolve({ transactionHash: "transactionHash" }),
-    });
-    mockedConnectERC721.mockReturnValue({
-      ownerOf: mockedOwnerOf,
-    });
-    mockedConnectTokenFactory.mockReturnValue({
-      transferHolder: mockTransferHolder,
-      callStatic: {
-        transferHolder: mockCallStaticTransferHolder,
-      },
+
+    beforeAll(() => {
+      mockedOwnerOf.mockReturnValue(mockedTitleEscrowAddress);
+      mockTransferHolder.mockReturnValue({
+        hash: "hash",
+        wait: () => Promise.resolve({ transactionHash: "transactionHash" }),
+      });
+      mockedConnectERC721.mockReturnValue({
+        ownerOf: mockedOwnerOf,
+      });
+      mockedConnectTokenFactory.mockReturnValue({
+        transferHolder: mockTransferHolder,
+        callStatic: {
+          transferHolder: mockCallStaticTransferHolder,
+        },
+      });
     });
 
     beforeEach(() => {
