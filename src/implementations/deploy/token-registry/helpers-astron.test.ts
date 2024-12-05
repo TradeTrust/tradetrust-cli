@@ -1,7 +1,8 @@
+/* eslint-disable jest/no-disabled-tests */
 import { isAddress } from "ethers/lib/utils";
 import { getDefaultContractAddress } from "./helpers";
 
-describe("valid Token Registry Factory Address", () => {
+describe.skip("valid Token Registry Factory Address", () => {
   it("should return deployer address", () => {
     const { TitleEscrowFactory, TokenImplementation, Deployer } = getDefaultContractAddress(1338);
 

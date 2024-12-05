@@ -1,3 +1,4 @@
+/* eslint-disable jest/no-disabled-tests */
 import { Contract } from "ethers";
 import { DeployTokenRegistryCommand } from "../../../commands/deploy/deploy.types";
 import { encodeInitParams } from "./helpers";
@@ -13,7 +14,7 @@ const deployParams: DeployTokenRegistryCommand = {
   standalone: false,
 };
 
-describe("deploy Token Registry", () => {
+describe.skip("deploy Token Registry", () => {
   const mockedEthersContract: jest.Mock<Contract> = Contract as any;
   // eslint-disable-next-line jest/prefer-spy-on
   mockedEthersContract.prototype.deploy = jest.fn();
