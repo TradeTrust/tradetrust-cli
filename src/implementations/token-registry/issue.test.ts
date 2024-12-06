@@ -11,18 +11,10 @@ const deployParams: TokenRegistryIssueCommand = {
   beneficiary: "0xabcd",
   holder: "0xabce",
   tokenId: "0xzyxw",
+  remark: "remark",
+  encryptionKey: "0x1234",
   address: "0x1234",
   network: "sepolia",
-  maxPriorityFeePerGasScale: 1,
-  dryRun: false,
-};
-
-const deployParamsHederaTestnet: TokenRegistryIssueCommand = {
-  beneficiary: "0xabcd",
-  holder: "0xabce",
-  tokenId: "0xzyxw",
-  address: "0x1234",
-  network: "hederatestnet",
   maxPriorityFeePerGasScale: 1,
   dryRun: false,
 };
@@ -37,11 +29,6 @@ describe("token-registry", () => {
     const mockedIssue = jest.fn();
     const mockCallStaticSafeMint = jest.fn().mockResolvedValue(undefined);
 
-    mockedIssue.mockReturnValue({
-      hash: "hash",
-      wait: () => Promise.resolve({ transactionHash: "transactionHash" }),
-    });
-
     const mockTtErc721Contract = {
       mint: mockedIssue,
       callStatic: {
@@ -55,8 +42,12 @@ describe("token-registry", () => {
       mockCallStaticSafeMint.mockClear();
       mockedConnectERC721.mockReset();
       mockedConnectERC721.mockResolvedValue(mockTtErc721Contract);
-    });
 
+      mockedIssue.mockReturnValue({
+        hash: "hash",
+        wait: () => Promise.resolve({ transactionHash: "transactionHash" }),
+      });
+    });
     it("should pass in the correct params and return the deployed instance", async () => {
       const privateKey = "0000000000000000000000000000000000000000000000000000000000000001";
       const instance = await issueToTokenRegistry({
@@ -104,56 +95,6 @@ describe("token-registry", () => {
         throw new Error("An Error");
       });
       await expect(issueToTokenRegistry(deployParams)).rejects.toThrow("An Error");
-    });
-
-    //Hedera Testnet
-    it("should pass in the correct params and return the deployed instance for hederatestnet", async () => {
-      const privateKey = "0000000000000000000000000000000000000000000000000000000000000001";
-      const instance = await issueToTokenRegistry({
-        ...deployParamsHederaTestnet,
-        key: privateKey,
-      });
-
-      const passedSigner: Wallet = mockedConnectERC721.mock.calls[0][1];
-      expect(passedSigner.privateKey).toBe(`0x${privateKey}`);
-      expect(mockedConnectERC721.mock.calls[0][0]).toEqual(deployParamsHederaTestnet.address);
-      expect(mockedIssue.mock.calls[0][0]).toEqual(deployParamsHederaTestnet.beneficiary);
-      expect(mockedIssue.mock.calls[0][1]).toEqual(deployParamsHederaTestnet.holder);
-      expect(mockedIssue.mock.calls[0][2]).toEqual(deployParamsHederaTestnet.tokenId);
-      expect(mockCallStaticSafeMint).toHaveBeenCalledTimes(1);
-      expect(instance).toStrictEqual({ transactionHash: "transactionHash" });
-    });
-
-    it("should accept tokenId without 0x prefix and return deployed instance for hederatestnet", async () => {
-      const privateKey = "0000000000000000000000000000000000000000000000000000000000000001";
-      const instance = await issueToTokenRegistry({
-        ...deployParamsHederaTestnet,
-        key: privateKey,
-        tokenId: addAddressPrefix("zyxw"),
-      });
-
-      const passedSigner: Wallet = mockedConnectERC721.mock.calls[0][1];
-      expect(passedSigner.privateKey).toBe(`0x${privateKey}`);
-      expect(mockedConnectERC721.mock.calls[0][0]).toEqual(deployParamsHederaTestnet.address);
-      expect(mockedIssue.mock.calls[0][0]).toEqual(deployParamsHederaTestnet.beneficiary);
-      expect(mockedIssue.mock.calls[0][1]).toEqual(deployParamsHederaTestnet.holder);
-      expect(mockedIssue.mock.calls[0][2]).toEqual(deployParamsHederaTestnet.tokenId);
-      expect(mockCallStaticSafeMint).toHaveBeenCalledTimes(1);
-      expect(instance).toStrictEqual({ transactionHash: "transactionHash" });
-    });
-
-    it("should throw when keys are not found anywhere for hederatestnet", async () => {
-      await expect(issueToTokenRegistry(deployParamsHederaTestnet)).rejects.toThrow(
-        "No private key found in OA_PRIVATE_KEY, key, key-file, please supply at least one or supply an encrypted wallet path, or provide aws kms signer information"
-      );
-    });
-
-    it("should allow errors to bubble up for hederatestnet", async () => {
-      process.env.OA_PRIVATE_KEY = "0000000000000000000000000000000000000000000000000000000000000002";
-      mockedConnectERC721.mockImplementation(() => {
-        throw new Error("An Error");
-      });
-      await expect(issueToTokenRegistry(deployParamsHederaTestnet)).rejects.toThrow("An Error");
     });
   });
 });

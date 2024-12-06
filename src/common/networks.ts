@@ -2,13 +2,13 @@ import { providers } from "ethers";
 import type { GasStationFunction } from "./gas-station";
 import { gasStation } from "./gas-station";
 
-export type networkCurrency = "ETH" | "MATIC" | "XDC" | "HBAR" | "FREE";
+export type networkCurrency = "ETH" | "MATIC" | "XDC" | "FREE" | "ASTRON";
 
 type SupportedNetwork = {
   explorer: string;
   provider: () => providers.Provider;
   networkId: number;
-  networkName: typeof NetworkCmdName[keyof typeof NetworkCmdName];
+  networkName: (typeof NetworkCmdName)[keyof typeof NetworkCmdName];
   currency: networkCurrency;
   gasStation?: ReturnType<GasStationFunction>;
 };
@@ -21,10 +21,9 @@ export enum NetworkCmdName {
   Amoy = "amoy",
   XDC = "xdc",
   XDCApothem = "xdcapothem",
-  HederaMainnet = "hederamainnet",
-  HederaTestnet = "hederatestnet",
   StabilityTestnet = "stabilitytestnet",
   Stability = "stability",
+  Astron = "astron",
 }
 
 const defaultInfuraProvider =
@@ -91,20 +90,6 @@ export const supportedNetwork: {
     networkName: NetworkCmdName.XDCApothem,
     currency: "XDC",
   },
-  [NetworkCmdName.HederaMainnet]: {
-    explorer: "https://hashscan.io/mainnet",
-    provider: jsonRpcProvider("https://mainnet.hashio.io/api"),
-    networkId: 295,
-    networkName: NetworkCmdName.HederaMainnet,
-    currency: "HBAR",
-  },
-  [NetworkCmdName.HederaTestnet]: {
-    explorer: "https://hashscan.io/testnet",
-    provider: jsonRpcProvider("https://testnet.hashio.io/api"),
-    networkId: 296,
-    networkName: NetworkCmdName.HederaTestnet,
-    currency: "HBAR",
-  },
   [NetworkCmdName.Stability]: {
     explorer: "https://stability.blockscout.com",
     provider: jsonRpcProvider(`https://gtn.stabilityprotocol.com/zgt/tradeTrust`),
@@ -120,6 +105,14 @@ export const supportedNetwork: {
     networkName: NetworkCmdName.StabilityTestnet,
     currency: "FREE",
     gasStation: gasStation("https://free.testnet.stabilityprotocol.com/gas-station"),
+  },
+  [NetworkCmdName.Astron]: {
+    explorer: "https://astronscanl2.bitfactory.cn/",
+    provider: jsonRpcProvider("https://astronlayer2.bitfactory.cn/rpc/"),
+    networkId: 1338,
+    networkName: NetworkCmdName.Astron,
+    currency: "ASTRON",
+    gasStation: gasStation("https://astronscanl2.bitfactory.cn/gas-station"),
   },
 };
 
