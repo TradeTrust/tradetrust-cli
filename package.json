@@ -69,13 +69,13 @@
     "typescript": "^4.9.5"
   },
   "dependencies": {
-    "@govtechsg/oa-encryption": "^1.3.3",
+    "@govtechsg/oa-encryption": "^1.3.5",
     "@snyk/protect": "^1.1196.0",
     "@tradetrust-tt/dnsprove": "^2.15.0",
     "@tradetrust-tt/document-store": "^4.1.0",
     "@tradetrust-tt/token-registry": "^5.1.0",
-    "@tradetrust-tt/tradetrust": "^6.9.7",
-    "@tradetrust-tt/tradetrust-config": "^1.16.0",
+    "@tradetrust-tt/tradetrust": "^6.10.0",
+    "@tradetrust-tt/tradetrust-config": "^1.17.0",
     "@tradetrust-tt/tt-verify": "^9.2.0",
     "@trustvc/trustvc": "^1.0.3",
     "ajv": "^8.4.0",
