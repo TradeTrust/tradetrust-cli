@@ -100,6 +100,12 @@ export const validateAndEncryptRemark = (remark?: string, keyId?: string): Bytes
     signale.error(error);
     throw new Error(error);
   }
-  return encrypt(remark ?? " ", keyId ?? "");
+
+  if (!remark || remark?.length === 0) {
+    return "0x";
+  }
+
+  const encrpyted = encrypt(remark, keyId ?? "");
+  return encrpyted.startsWith("0x") ? encrpyted : `0x${encrpyted}`;
   // return "0x1234";
 };
