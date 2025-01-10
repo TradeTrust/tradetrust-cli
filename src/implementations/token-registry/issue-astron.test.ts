@@ -19,7 +19,21 @@ const deployParams: TokenRegistryIssueCommand = {
 
 describe("token-registry", () => {
   describe("issue", () => {
-    jest.setTimeout(30000);
+    // increase timeout because ethers is throttling
+    jest.setTimeout(30_000);
+    jest.spyOn(global, "fetch").mockImplementation(
+      jest.fn(() =>
+        Promise.resolve({
+          json: () =>
+            Promise.resolve({
+              standard: {
+                maxPriorityFee: 0,
+                maxFee: 0,
+              },
+            }),
+        })
+      ) as jest.Mock
+    );
     const mockedTradeTrustTokenFactory: jest.Mock<TradeTrustToken__factory> = TradeTrustToken__factory as any;
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore mock static method

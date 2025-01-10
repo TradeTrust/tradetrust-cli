@@ -22,7 +22,21 @@ const deployParams: DocumentStoreRoleCommand = {
 // ideally must setup ganache, and run the function over it
 describe("document-store", () => {
   // increase timeout because ethers is throttling
-  jest.setTimeout(30000);
+  jest.setTimeout(30_000);
+  jest.spyOn(global, "fetch").mockImplementation(
+    jest.fn(() =>
+      Promise.resolve({
+        json: () =>
+          Promise.resolve({
+            standard: {
+              maxPriorityFee: 0,
+              maxFee: 0,
+            },
+          }),
+      })
+    ) as jest.Mock
+  );
+
   describe("revoke document store issuer role to wallet", () => {
     const mockedDocumentStoreFactory: jest.Mock<DocumentStoreFactory> = DocumentStoreFactory as any;
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment

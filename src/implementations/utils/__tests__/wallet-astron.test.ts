@@ -13,7 +13,20 @@ const walletAddress = "0xB26B4941941C51a4885E5B7D3A1B861E54405f90";
 
 describe("wallet", () => {
   // increase timeout because ethers is throttling
-  jest.setTimeout(30000);
+  jest.setTimeout(30_000);
+  jest.spyOn(global, "fetch").mockImplementation(
+    jest.fn(() =>
+      Promise.resolve({
+        json: () =>
+          Promise.resolve({
+            standard: {
+              maxPriorityFee: 0,
+              maxFee: 0,
+            },
+          }),
+      })
+    ) as jest.Mock
+  );
   afterEach(() => {
     delete process.env.OA_PRIVATE_KEY;
     promptMock.mockRestore();

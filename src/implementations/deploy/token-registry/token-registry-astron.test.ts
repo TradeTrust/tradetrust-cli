@@ -21,7 +21,20 @@ describe.skip("deploy Token Registry", () => {
   const mockedDeploy: jest.Mock = mockedEthersContract.prototype.deploy;
 
   // increase timeout because ethers is throttling
-  jest.setTimeout(30000);
+  jest.setTimeout(30_000);
+  jest.spyOn(global, "fetch").mockImplementation(
+    jest.fn(() =>
+      Promise.resolve({
+        json: () =>
+          Promise.resolve({
+            standard: {
+              maxPriorityFee: 0,
+              maxFee: 0,
+            },
+          }),
+      })
+    ) as jest.Mock
+  );
 
   beforeEach(() => {
     mockedDeploy.mockReset();

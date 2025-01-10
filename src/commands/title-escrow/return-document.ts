@@ -7,9 +7,9 @@ import { returnDocument } from "../../implementations/title-escrow/returnDocumen
 import { displayTransactionPrice, getErrorMessage, getEtherscanAddress } from "../../utils";
 import { NetworkCmdName } from "../../common/networks";
 
-const { trace } = getLogger("title-escrow:return-document-to-issuer");
+const { trace } = getLogger("title-escrow:return-to-issuer");
 
-export const command = "return-document-to-issuer [options]";
+export const command = "return-to-issuer [options]";
 
 export const describe = "Returns a document on the blockchain";
 
