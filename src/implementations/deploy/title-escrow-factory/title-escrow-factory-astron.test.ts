@@ -18,7 +18,20 @@ describe("title escrow factory", () => {
     const mockedTitleEscrowFactory: jest.Mock<TitleEscrowFactory__factory> = TitleEscrowFactory__factory as any;
     const mockedDeploy: jest.Mock = mockedTitleEscrowFactory.prototype.deploy;
     // increase timeout because ethers is throttling
-    jest.setTimeout(30000);
+    jest.setTimeout(30_000);
+    jest.spyOn(global, "fetch").mockImplementation(
+      jest.fn(() =>
+        Promise.resolve({
+          json: () =>
+            Promise.resolve({
+              standard: {
+                maxPriorityFee: 0,
+                maxFee: 0,
+              },
+            }),
+        })
+      ) as jest.Mock
+    );
 
     beforeEach(() => {
       delete process.env.OA_PRIVATE_KEY;

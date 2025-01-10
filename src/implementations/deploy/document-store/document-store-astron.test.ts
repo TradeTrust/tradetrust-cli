@@ -21,7 +21,20 @@ describe("document-store", () => {
     const mockedDocumentStoreFactory: jest.Mock<DocumentStoreFactory> = documentStoreFactory;
     const mockedDeploy: jest.Mock = mockedDocumentStoreFactory.prototype.deploy;
     // increase timeout because ethers is throttling
-    jest.setTimeout(30000);
+    jest.setTimeout(30_000);
+    jest.spyOn(global, "fetch").mockImplementation(
+      jest.fn(() =>
+        Promise.resolve({
+          json: () =>
+            Promise.resolve({
+              standard: {
+                maxPriorityFee: 0,
+                maxFee: 0,
+              },
+            }),
+        })
+      ) as jest.Mock
+    );
 
     beforeEach(() => {
       delete process.env.OA_PRIVATE_KEY;
