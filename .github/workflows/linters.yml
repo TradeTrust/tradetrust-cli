@@ -23,6 +23,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18.x
       - name: Install Commit Lint Dependencies
         run: npm install @commitlint/config-conventional
       - uses: JulienKode/pull-request-name-linter-action@v0.5.0
