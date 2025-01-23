@@ -36,7 +36,19 @@ export const documentsInDirectory = async (documentPath: string): Promise<string
 
 // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 export const writeDocumentToDisk = (destinationDir: string, filename: string, document: any): void => {
-  fs.writeFileSync(path.join(path.resolve(destinationDir), filename), JSON.stringify(document, null, 2));
+  // Resolve the destination directory and filename to get an absolute path
+  const resolvedDestination = path.resolve(destinationDir);
+
+  // Concatenate filename to the destination
+  const safePath = path.join(resolvedDestination, filename);
+
+  // Ensure the resolved path starts with the intended directory (destinationDir)
+  if (!safePath.startsWith(resolvedDestination)) {
+    throw new Error("Unsafe file path detected.");
+  }
+
+  // Write the document to the sanitized path
+  fs.writeFileSync(safePath, JSON.stringify(document, null, 2));
 };
 
 export enum Output {

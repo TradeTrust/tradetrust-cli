@@ -1,9 +1,10 @@
 import { wrap } from "../src/implementations/wrap";
 import { Output } from "../src/implementations/utils/disk";
 import { performance } from "perf_hooks";
-import { existsSync, mkdirSync, rmdirSync, promises } from "fs";
+import { existsSync, mkdirSync, rmdirSync, promises, constants } from "fs";
+import { access } from "fs/promises";
 import { SchemaId } from "@tradetrust-tt/tradetrust";
-import { join, parse } from "path";
+import { join, parse, resolve } from "path";
 
 const DEFAULT_NUMBER_OF_FILE = 2;
 const DEFAULT_ITERATION = 1;
@@ -20,7 +21,17 @@ const setup = async (filePath: string, numberOfFiles: number): Promise<void> => 
   try {
     existsSync(INPUT_UNWRAPPED_FILE_FOLDER) || mkdirSync(INPUT_UNWRAPPED_FILE_FOLDER, { recursive: true });
     for (let index = 0; index < numberOfFiles; index++) {
-      const outputPath = join(INPUT_UNWRAPPED_FILE_FOLDER, `${fileName + (index + 1)}${fileExtension}`);
+      const outputPath = resolve(INPUT_UNWRAPPED_FILE_FOLDER, `${fileName + (index + 1)}${fileExtension}`);
+
+      // Sanitize the file path to prevent directory traversal
+      if (!outputPath.startsWith(INPUT_UNWRAPPED_FILE_FOLDER)) {
+        throw new Error("Unsafe file path detected.");
+      }
+
+      // Ensure the file exists and is readable
+      await access(filePath, constants.R_OK);
+
+      // Copy the file safely
       await promises.copyFile(filePath, outputPath);
     }
   } catch (e) {
@@ -42,6 +53,15 @@ const monitorWrapFeature = async (): Promise<void> => {
     const numberOfFiles: number = parseInt(process.argv[2], 10) || DEFAULT_NUMBER_OF_FILE;
     const iteration: number = parseInt(process.argv[3], 10) || DEFAULT_ITERATION;
     const filePath: string = process.argv[4] || DEFAULT_FILE_PATH;
+
+    // Ensure the provided file path is absolute
+    const absoluteFilePath = resolve(filePath);
+
+    // Ensure the file path is within the allowed directory
+    if (!absoluteFilePath.startsWith(__dirname)) {
+      throw new Error("Unsafe file path detected.");
+    }
+
     // Setup Number of Files
     await setup(filePath, numberOfFiles);
 
