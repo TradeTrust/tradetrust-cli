@@ -92,19 +92,19 @@ export const supportedNetwork: {
   },
   [NetworkCmdName.Stability]: {
     explorer: "https://stability.blockscout.com",
-    provider: jsonRpcProvider(`https://gtn.stabilityprotocol.com/zgt/tradeTrust`),
+    provider: jsonRpcProvider(`https://rpc.stabilityprotocol.com/zgt/tradeTrust`),
     networkId: 101010,
     networkName: NetworkCmdName.Stability,
     currency: "FREE",
-    gasStation: gasStation("https://gtn.stabilityprotocol.com/gas-station"),
+    gasStation: gasStation("https://rpc.stabilityprotocol.com/gas-station"),
   },
   [NetworkCmdName.StabilityTestnet]: {
     explorer: "https://stability-testnet.blockscout.com/",
-    provider: jsonRpcProvider("https://free.testnet.stabilityprotocol.com"),
+    provider: jsonRpcProvider("https://rpc.testnet.stabilityprotocol.com/zgt/tradeTrust"),
     networkId: 20180427,
     networkName: NetworkCmdName.StabilityTestnet,
     currency: "FREE",
-    gasStation: gasStation("https://free.testnet.stabilityprotocol.com/gas-station"),
+    gasStation: gasStation("https://rpc.testnet.stabilityprotocol.com/gas-station"),
   },
   [NetworkCmdName.Astron]: {
     explorer: "https://astronscanl2.bitfactory.cn/",
