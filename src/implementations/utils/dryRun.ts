@@ -45,8 +45,8 @@ export const dryRunMode = async ({
 
   const spotRateETHUSD = await getSpotRate("ETH", "USD");
   const spotRateETHSGD = await getSpotRate("ETH", "SGD");
-  const spotRateMATICUSD = await getSpotRate("MATIC", "USD");
-  const spotRateMATICSGD = await getSpotRate("MATIC", "SGD");
+  const spotRateMATICUSD = await getSpotRate("POL", "USD");
+  const spotRateMATICSGD = await getSpotRate("POL", "SGD");
   const estimatedFeeUSD = convertWeiFiatDollars(gasCost, spotRateETHUSD);
 
   console.log(
