@@ -1,6 +1,6 @@
 import { ethers } from "ethers";
 import { constants, utils } from "@tradetrust-tt/token-registry";
-import { TitleEscrow, TitleEscrowFactory } from "@tradetrust-tt/token-registry/dist/contracts";
+import { TitleEscrow, TitleEscrowFactory } from "@tradetrust-tt/token-registry/contracts";
 import { isAddress } from "ethers/lib/utils";
 
 const { contractInterfaceId: CONTRACT_INTERFACE_ID, contractAddress: CONTRACT_ADDRESS } = constants;

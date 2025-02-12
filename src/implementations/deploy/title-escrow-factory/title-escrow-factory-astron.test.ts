@@ -1,7 +1,7 @@
 import { join } from "path";
 import { Wallet } from "ethers";
 import { DeployTitleEscrowFactoryCommand } from "../../../commands/deploy/deploy.types";
-import { TitleEscrowFactory__factory } from "@tradetrust-tt/token-registry/dist/contracts";
+import { TitleEscrowFactory__factory } from "@tradetrust-tt/token-registry/contracts";
 import { deployTitleEscrowFactory } from "./title-escrow-factory";
 
 jest.mock("@tradetrust-tt/token-registry/contracts");
