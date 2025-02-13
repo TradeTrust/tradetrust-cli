@@ -5,7 +5,7 @@ import { BaseTitleEscrowCommand as TitleEscrowReturnDocumentCommand } from "../.
 
 import { dryRunMode } from "../utils/dryRun";
 import { TransactionReceipt } from "@ethersproject/providers";
-import { TradeTrustToken__factory } from "@tradetrust-tt/token-registry/dist/contracts";
+import { TradeTrustToken__factory } from "@tradetrust-tt/token-registry/contracts";
 import { canEstimateGasPrice, getGasFees } from "../../utils";
 import { validateAndEncryptRemark } from "./helpers";
 
