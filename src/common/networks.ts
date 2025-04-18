@@ -24,6 +24,7 @@ export enum NetworkCmdName {
   StabilityTestnet = "stabilitytestnet",
   Stability = "stability",
   Astron = "astron",
+  AstronTestnet = "astrontestnet",
 }
 
 const defaultInfuraProvider =
@@ -113,6 +114,14 @@ export const supportedNetwork: {
     networkName: NetworkCmdName.Astron,
     currency: "ASTRON",
     gasStation: gasStation("https://astronscanl2.bitfactory.cn/gas-station"),
+  },
+  [NetworkCmdName.AstronTestnet]: {
+    explorer: "https://dev-astronscanl2.bitfactory.cn/",
+    provider: jsonRpcProvider("https://dev-astronlayer2.bitfactory.cn/query/"),
+    networkId: 21002,
+    networkName: NetworkCmdName.AstronTestnet,
+    currency: "ASTRON",
+    gasStation: gasStation("https://dev-astronscanl2.bitfactory.cn/gas-station"),
   },
 };
 

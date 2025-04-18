@@ -1,0 +1,20 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`get should return dns-txt 1`] = `
+[
+  {
+    "addr": "0xb1Bf514b3893357813F366282E887eE221D5C2dA",
+    "dnssec": false,
+    "net": "ethereum",
+    "netId": "21002",
+    "type": "openatts",
+  },
+  {
+    "addr": "0xdAEe89A37fEEBCBFAc94aBA63Fb163808dAc38Fb",
+    "dnssec": false,
+    "net": "ethereum",
+    "netId": "21002",
+    "type": "openatts",
+  },
+]
+`;
