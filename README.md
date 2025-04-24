@@ -46,6 +46,7 @@ npx -p @tradetrust-tt/tradetrust-cli tradetrust <arguments>
 | Stability         | stability        | 101010   | Stability   | Mainnet      |
 | Stability Testnet | stabilitytestnet | 20180427 | Stability   | Testnet      |
 | Astron            | Astron           | 1338     | Astron      | Mainnet      |
+| Astron Testnet    | Astrontestnet    | 21002    | Astron      | Testnet      |
 
 _Note: Network Name is the name used in the CLI --network options_
 
