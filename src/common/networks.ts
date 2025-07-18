@@ -109,7 +109,7 @@ export const supportedNetwork: {
   },
   [NetworkCmdName.Astron]: {
     explorer: "https://astronscanl2.bitfactory.cn/",
-    provider: jsonRpcProvider("https://astronlayer2.bitfactory.cn/rpc/"),
+    provider: jsonRpcProvider("https://astronlayer2.bitfactory.cn/query/"),
     networkId: 1338,
     networkName: NetworkCmdName.Astron,
     currency: "ASTRON",
