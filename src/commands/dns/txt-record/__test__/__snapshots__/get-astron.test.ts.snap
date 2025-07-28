@@ -10,6 +10,13 @@ exports[`get should return dns-txt 1`] = `
     "type": "openatts",
   },
   {
+    "addr": "0x94FD21A026E29E0686583b8be71Cb28a8ca1A8d4",
+    "dnssec": false,
+    "net": "ethereum",
+    "netId": "1338",
+    "type": "openatts",
+  },
+  {
     "addr": "0xc98d993271a997384889dd39c14cec0c1e0206c2",
     "dnssec": false,
     "net": "ethereum",
