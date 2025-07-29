@@ -23,7 +23,7 @@
     "benchmark:run": "./scripts/benchmark.sh",
     "benchmark:clean": "rm -rf ./benchmark",
     "benchmark:full": "npm run benchmark:make-certs && npm run benchmark:run && npm run benchmark:clean",
-    "prepare": "patch-package && snyk-protect",
+    "prepare": "snyk-protect",
     "benchmark": "ts-node performance-tests/wrap-performance-test.ts",
     "pkg": "npx pkg ./package.json --out-path dist/@tradetrust-tt",
     "release:dryrun": "semantic-release --dry-run --no-ci"
@@ -58,7 +58,6 @@
     "git-cz": "^4.7.6",
     "jest": "^29.7.0",
     "jest-watch-typeahead": "^2.2.2",
-    "patch-package": "^8.0.0",
     "pkg": "^5.8.1",
     "prettier": "^2.3.0",
     "proxyquire": "^2.1.3",
