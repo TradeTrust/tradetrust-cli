@@ -592,6 +592,27 @@ rm ./examples/sample-key
 tradetrust deploy document-store "My Name" --network sepolia --key 0000000000000000000000000000000000000000000000000000000000000003
 ```
 
+### Providing custom RPC URLs
+
+When interacting with the blockchain, you may want to connect to a different Ethereum provider than the default ones. All functions that interact with the blockchain support the `--rpc-url` option to specify a custom RPC endpoint:
+
+1. Using `--rpc-url` option where you provide the URL of your custom Ethereum RPC provider.
+2. When `--rpc-url` is provided, it takes precedence over the default network provider.
+3. This is useful for connecting to private networks, custom providers, or alternative public endpoints.
+
+Example:
+
+```bash
+# Using custom RPC URL with document store deployment
+tradetrust deploy document-store "My Name" --network sepolia --rpc-url https://custom-rpc.example.com
+
+# Using custom RPC URL with token registry operations
+tradetrust deploy token-registry "My Registry" --network sepolia --rpc-url https://my-provider.com
+
+# Using custom RPC URL with document store operations
+tradetrust document-store issue --address 0x1234... --hash 0xabcd... --network sepolia --rpc-url https://custom-endpoint.io
+```
+
 ### Providing the Remarks and Encryption Key
 
 Enables users to attach encrypted remarks (up to 120 characters) to blockchain transactions. The encrypted remarks are stored immutably on the blockchain and can be viewed in the endorsement chain. This ensures secure and meaningful metadata is recorded alongside transactions.
