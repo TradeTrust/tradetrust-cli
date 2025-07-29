@@ -1,8 +1,8 @@
 diff --git a/node_modules/security-context/js/index.js b/node_modules/security-context/js/index.js
-index 16048c7..e5da421 100644
+index 440b400..a0bab30 100644
 --- a/node_modules/security-context/js/index.js
 +++ b/node_modules/security-context/js/index.js
-@@ -8,10 +8,19 @@ exports.constants = constants;
+@@ -8,10 +8,21 @@ exports.constants = constants;
  const contexts = exports.contexts = new Map();
  
  function _read(_path) {
@@ -16,7 +16,7 @@ index 16048c7..e5da421 100644
 +      console.error(`Security context file not found: ${filePath}`);
 +      return {};
 +    }
-+    const fileContent = fs.readFileSync(filePath, {encoding: 'utf8'});
++    const fileContent = fs.readFileSync(filePath, { encoding: 'utf8' });
 +    if (!fileContent || fileContent === 'undefined') {
 +      return {};
 +    }
