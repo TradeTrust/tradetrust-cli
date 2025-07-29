@@ -6,7 +6,14 @@ import wrappedFileFixture1 from "./fixture/2.0/wrapped-example.1.json";
 import unwrappedFileFixture1 from "./fixture/2.0/unwrapped-example.1.json";
 import wrappedFileFixture2 from "./fixture/2.0/wrapped-example.2.json";
 import unwrappedFileFixture2 from "./fixture/2.0/unwrapped-example.2.json";
-import * as disk from "../implementations/utils/disk";
+jest.mock("fs", () => {
+  return {
+    ...jest.requireActual("fs"),
+    readdir: jest.fn(),
+    lstatSync: jest.fn(),
+    writeFileSync: jest.fn(),
+  };
+});
 
 describe("unwrap", () => {
   describe("unwrapIndividualDocuments", () => {
@@ -34,7 +41,6 @@ describe("unwrap", () => {
         }
         throw new Error(`unhandled ${path} in spy`);
       });
-      jest.spyOn(disk, "documentsInDirectory").mockResolvedValue(["./fixture/2.0/wrapped-example.1.json"]);
 
       const unwrappedDocumentCount = await unwrapIndividualDocuments(
         "./fixture/2.0",
@@ -80,9 +86,6 @@ describe("unwrap", () => {
         }
         throw new Error(`unhandled ${path} in spy`);
       });
-      jest
-        .spyOn(disk, "documentsInDirectory")
-        .mockResolvedValue(["./fixture/2.0/wrapped-example.1.json", "./fixture/2.0/wrapped-example.2.json"]);
 
       const unwrappedDocumentCount = await unwrapIndividualDocuments(
         "./fixture/2.0",

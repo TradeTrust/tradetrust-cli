@@ -1,79 +1,35 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 import { appendProofToDocuments, merkleHashmap } from "../implementations/wrap";
 import { Output } from "../implementations/utils/disk";
-import * as disk from "../implementations/utils/disk";
 import fs from "fs";
-import util from "util";
 import { utils } from "@tradetrust-tt/tradetrust";
+
+jest.mock("fs", () => {
+  return {
+    ...jest.requireActual("fs"),
+    readdir: jest.fn(),
+    lstatSync: jest.fn(),
+    writeFileSync: jest.fn(),
+  };
+});
 
 describe("batchIssue", () => {
   describe("appendProofToDocuments", () => {
     it("determines the proof for each document using the hashmap and writes the new document back", async () => {
+      expect.assertions(4); // make sure there are 4 assertions because some assertions are made in fs.spyOn
       const hashMap = {
         a: { sibling: "b", parent: "d" },
         b: { sibling: "a", parent: "d" },
         c: { sibling: "d", parent: "e" },
         d: { sibling: "c", parent: "e" },
       };
-
-      // Mock fs.lstatSync to always return a directory
-      jest.spyOn(fs, "lstatSync").mockImplementation((): any => {
-        console.log("🚀 ~ isDirectory:");
-        return {
-          isDirectory: (): boolean => {
-            console.log("🚀 ~ isDirectory:");
-            return true;
-          },
-        };
-      });
-
-      // Mock readdirSync for synchronous calls
-      jest.spyOn(fs, "readdirSync").mockImplementation((): any => {
-        console.log("🚀 ~ fs ~ readdirSync:");
-        return ["file_1.json", "file_2.json", "file_3.json"];
-      });
-
-      // Create a mock implementation that will be used by the promisified version
-      const mockReaddirImpl = jest.fn().mockImplementation((path: any, options: any, callback: any) => {
-        console.log("🚀 ~ DIRECT fs.readdir called with path:", path);
-
-        // Handle both callback style and promisified style
-        if (typeof options === "function") {
-          callback = options;
-          options = undefined;
-        }
-
-        if (callback) {
-          // Ensure callback is called asynchronously to better simulate real behavior
-          process.nextTick(() => {
-            callback(null, ["file_1.json", "file_2.json", "file_3.json"]);
-          });
-        }
-        return undefined;
-      });
-
-      // Replace the fs.readdir implementation
-      jest.spyOn(fs, "readdir").mockImplementation(mockReaddirImpl);
-
-      // Mock promisify to return our custom implementation for fs.readdir
-      jest.spyOn(util, "promisify").mockImplementation((fn) => {
-        console.log("🚀 ~ promisify:");
-        if (fn === fs.readdir) {
-          console.log("🚀 ~ promisifying fs.readdir");
-          return jest.fn().mockResolvedValue(["file_1.json", "file_2.json", "file_3.json"]);
-        }
-        // Fall back to original for other functions
+      // @ts-ignore
+      jest.spyOn(fs, "lstatSync").mockReturnValue({ isDirectory: () => true });
+      jest.spyOn(fs, "readdir").mockImplementation((options, callback) => {
         // @ts-ignore
-        return jest.requireActual("util").promisify(fn);
+        return callback(null, ["file_1.json", "file_2.json", "file_3.json"]);
       });
-
-      // // Ensure documentsInDirectory gets mocked directly to bypass any fs issues
-      jest
-        .spyOn(disk, "documentsInDirectory")
-        .mockResolvedValue(["DIR/file_1.json", "DIR/file_2.json", "DIR/file_3.json"]);
-
       jest.spyOn(fs, "readFileSync").mockImplementation((path) => {
-        console.log("🚀 ~ readFileSync:", path);
         // @ts-ignore
         if (path.includes("file_1.json")) {
           return JSON.stringify({
