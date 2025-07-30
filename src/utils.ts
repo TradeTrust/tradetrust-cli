@@ -97,7 +97,12 @@ export const calculateMaxFee = (
 };
 
 export const canEstimateGasPrice = (network: string): boolean => {
-  if (network === NetworkCmdName.XDC || network === NetworkCmdName.XDCApothem) {
+  if (
+    network === NetworkCmdName.XDC ||
+    network === NetworkCmdName.XDCApothem ||
+    network === NetworkCmdName.Astron ||
+    network === NetworkCmdName.AstronTestnet
+  ) {
     return false;
   }
   return true;
@@ -112,7 +117,9 @@ export const displayTransactionPrice = async (
     network === NetworkCmdName.XDC ||
     network === NetworkCmdName.XDCApothem ||
     network === NetworkCmdName.StabilityTestnet ||
-    network === NetworkCmdName.Stability
+    network === NetworkCmdName.Stability ||
+    network === NetworkCmdName.Astron ||
+    network === NetworkCmdName.AstronTestnet
   ) {
     return;
   }
