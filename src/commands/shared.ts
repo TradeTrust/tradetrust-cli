@@ -42,6 +42,15 @@ export const isWalletOption = (option: any): option is WalletOption => {
   return typeof option?.encryptedWalletPath === "string";
 };
 
+export type RpcUrlOption = {
+  rpcUrl: string;
+};
+
+// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
+export const isRpcUrlOption = (option: any): option is RpcUrlOption => {
+  return typeof option?.rpcUrl === "string";
+};
+
 export type WalletOrSignerOption = Partial<PrivateKeyOption> | Partial<AwsKmsSignerOption> | Partial<WalletOption>;
 
 export interface GasPriceScale {
@@ -121,5 +130,11 @@ export const withAwsKmsSignerOption = (yargs: Argv): Argv =>
         "AWS KMS key id. Example: arn:aws:kms:us-west-2:111122223333:key/1234abcd-12ab-34cd-56ef-1234567890ab",
     });
 
+export const withRpcUrlOption = (yargs: Argv): Argv =>
+  yargs.option("rpc-url", {
+    type: "string",
+    description: "Custom RPC URL to connect to. Example: https://mainnet.infura.io/v3/YOUR-PROJECT-ID",
+  });
+
 export const withNetworkAndWalletSignerOption = (yargs: Argv): Argv =>
-  withNetworkOption(withAwsKmsSignerOption(withWalletOption(withPrivateKeyOption(yargs))));
+  withNetworkOption(withRpcUrlOption(withAwsKmsSignerOption(withWalletOption(withPrivateKeyOption(yargs)))));

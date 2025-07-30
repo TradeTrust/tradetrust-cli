@@ -6,9 +6,11 @@ import { addAddressPrefix } from "../../utils";
 
 import {
   isAwsKmsSignerOption,
+  isRpcUrlOption,
   isWalletOption,
   NetworkOption,
   PrivateKeyOption,
+  RpcUrlOption,
   WalletOrSignerOption,
 } from "../../commands/shared";
 import { readFile } from "./disk";
@@ -43,10 +45,13 @@ export const getWalletOrSigner = async ({
   network,
   progress = defaultProgress("Decrypting Wallet"),
   ...options
-}: WalletOrSignerOption & Partial<NetworkOption> & { progress?: (progress: number) => void }): Promise<
-  Wallet | ConnectedSigner
-> => {
-  const provider = getSupportedNetwork(network ?? "mainnet").provider();
+}: WalletOrSignerOption &
+  Partial<NetworkOption> &
+  Partial<RpcUrlOption> & { progress?: (progress: number) => void }): Promise<Wallet | ConnectedSigner> => {
+  // Use custom RPC URL if provided, otherwise use the default network provider
+  const provider = isRpcUrlOption(options)
+    ? new ethers.providers.JsonRpcProvider(options.rpcUrl)
+    : getSupportedNetwork(network ?? "mainnet").provider();
   if (isWalletOption(options)) {
     const { password } = await inquirer.prompt({ type: "password", name: "password", message: "Wallet password" });
 

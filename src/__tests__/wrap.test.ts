@@ -4,7 +4,14 @@ import { Output } from "../implementations/utils/disk";
 import fs from "fs";
 import { utils } from "@tradetrust-tt/tradetrust";
 
-jest.mock("fs");
+jest.mock("fs", () => {
+  return {
+    ...jest.requireActual("fs"),
+    readdir: jest.fn(),
+    lstatSync: jest.fn(),
+    writeFileSync: jest.fn(),
+  };
+});
 
 describe("batchIssue", () => {
   describe("appendProofToDocuments", () => {
