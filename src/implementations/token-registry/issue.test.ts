@@ -1,11 +1,12 @@
-import { TradeTrustToken__factory } from "@tradetrust-tt/token-registry/contracts";
 import { Wallet } from "ethers";
-
 import { TokenRegistryIssueCommand } from "../../commands/token-registry/token-registry-command.type";
 import { addAddressPrefix } from "../../utils";
 import { issueToTokenRegistry } from "./issue";
+import { mint } from "@trustvc/trustvc";
 
-jest.mock("@tradetrust-tt/token-registry/contracts");
+jest.mock("@trustvc/trustvc", () => ({
+  mint: jest.fn(),
+}));
 
 const deployParams: TokenRegistryIssueCommand = {
   beneficiary: "0xabcd",
@@ -19,35 +20,31 @@ const deployParams: TokenRegistryIssueCommand = {
   dryRun: false,
 };
 
+const mockTransaction = {
+  transactionHash: "0x194bdcf15e",
+  to: "0x1234",
+  from: "0x5678",
+  transactionIndex: 0,
+  blockHash: "0xabcd",
+  logs: [],
+  events: [],
+};
+
 describe("token-registry", () => {
   describe("issue", () => {
     jest.setTimeout(30000);
-    const mockedTradeTrustTokenFactory: jest.Mock<TradeTrustToken__factory> = TradeTrustToken__factory as any;
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore mock static method
-    const mockedConnectERC721: jest.Mock = mockedTradeTrustTokenFactory.connect;
-    const mockedIssue = jest.fn();
-    const mockCallStaticSafeMint = jest.fn().mockResolvedValue(undefined);
-
-    const mockTtErc721Contract = {
-      mint: mockedIssue,
-      callStatic: {
-        mint: mockCallStaticSafeMint,
-      },
-    };
+    const mockedMint = mint as jest.MockedFunction<typeof mint>;
 
     beforeEach(() => {
       delete process.env.OA_PRIVATE_KEY;
-      mockedTradeTrustTokenFactory.mockClear();
-      mockCallStaticSafeMint.mockClear();
-      mockedConnectERC721.mockReset();
-      mockedConnectERC721.mockResolvedValue(mockTtErc721Contract);
-
-      mockedIssue.mockReturnValue({
-        hash: "hash",
-        wait: () => Promise.resolve({ transactionHash: "transactionHash" }),
-      });
+      mockedMint.mockClear();
+      mockedMint.mockResolvedValue({
+        hash: "0x194bdcf15e",
+        blockNumber: 123,
+        wait: () => Promise.resolve(mockTransaction as any),
+      } as any);
     });
+
     it("should pass in the correct params and return the deployed instance", async () => {
       const privateKey = "0000000000000000000000000000000000000000000000000000000000000001";
       const instance = await issueToTokenRegistry({
@@ -55,32 +52,41 @@ describe("token-registry", () => {
         key: privateKey,
       });
 
-      const passedSigner: Wallet = mockedConnectERC721.mock.calls[0][1];
-      expect(passedSigner.privateKey).toBe(`0x${privateKey}`);
-      expect(mockedConnectERC721.mock.calls[0][0]).toEqual(deployParams.address);
-      expect(mockedIssue.mock.calls[0][0]).toEqual(deployParams.beneficiary);
-      expect(mockedIssue.mock.calls[0][1]).toEqual(deployParams.holder);
-      expect(mockedIssue.mock.calls[0][2]).toEqual(deployParams.tokenId);
-      expect(mockCallStaticSafeMint).toHaveBeenCalledTimes(1);
-      expect(instance).toStrictEqual({ transactionHash: "transactionHash" });
+      expect(mockedMint).toHaveBeenCalledTimes(1);
+      const [contractOptions, signer, params, options] = mockedMint.mock.calls[0];
+      expect(contractOptions.tokenRegistryAddress).toEqual(deployParams.address);
+      expect((signer as Wallet).privateKey).toBe(`0x${privateKey}`);
+
+      expect(params.beneficiaryAddress).toEqual(deployParams.beneficiary);
+      expect(params.holderAddress).toEqual(deployParams.holder);
+      expect(params.tokenId).toEqual(deployParams.tokenId);
+      expect(params.remarks).toEqual(deployParams.remark);
+
+      expect(options.id).toEqual(deployParams.encryptionKey);
+      expect(instance).toStrictEqual(mockTransaction);
     });
 
     it("should accept tokenId without 0x prefix and return deployed instance", async () => {
       const privateKey = "0000000000000000000000000000000000000000000000000000000000000001";
+      const tokenIdWithPrefix = addAddressPrefix("zyxw");
       const instance = await issueToTokenRegistry({
         ...deployParams,
         key: privateKey,
-        tokenId: addAddressPrefix("zyxw"),
+        tokenId: tokenIdWithPrefix,
       });
 
-      const passedSigner: Wallet = mockedConnectERC721.mock.calls[0][1];
-      expect(passedSigner.privateKey).toBe(`0x${privateKey}`);
-      expect(mockedConnectERC721.mock.calls[0][0]).toEqual(deployParams.address);
-      expect(mockedIssue.mock.calls[0][0]).toEqual(deployParams.beneficiary);
-      expect(mockedIssue.mock.calls[0][1]).toEqual(deployParams.holder);
-      expect(mockedIssue.mock.calls[0][2]).toEqual(deployParams.tokenId);
-      expect(mockCallStaticSafeMint).toHaveBeenCalledTimes(1);
-      expect(instance).toStrictEqual({ transactionHash: "transactionHash" });
+      expect(mockedMint).toHaveBeenCalledTimes(1);
+      const [contractOptions, signer, params, options] = mockedMint.mock.calls[0];
+      expect(contractOptions.tokenRegistryAddress).toEqual(deployParams.address);
+      expect((signer as Wallet).privateKey).toBe(`0x${privateKey}`);
+
+      expect(params.beneficiaryAddress).toEqual(deployParams.beneficiary);
+      expect(params.holderAddress).toEqual(deployParams.holder);
+      expect(params.tokenId).toEqual(tokenIdWithPrefix);
+      expect(params.remarks).toEqual(deployParams.remark);
+
+      expect(options.id).toEqual(deployParams.encryptionKey);
+      expect(instance).toStrictEqual(mockTransaction);
     });
 
     it("should throw when keys are not found anywhere", async () => {
@@ -91,9 +97,7 @@ describe("token-registry", () => {
 
     it("should allow errors to bubble up", async () => {
       process.env.OA_PRIVATE_KEY = "0000000000000000000000000000000000000000000000000000000000000002";
-      mockedConnectERC721.mockImplementation(() => {
-        throw new Error("An Error");
-      });
+      mockedMint.mockRejectedValue(new Error("An Error"));
       await expect(issueToTokenRegistry(deployParams)).rejects.toThrow("An Error");
     });
   });
