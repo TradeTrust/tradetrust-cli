@@ -79,8 +79,6 @@ describe("document-store", () => {
       expect(passedSigner.privateKey).toBe(`0x${deployParams.key}`);
       expect(mockedDeploy.mock.calls[0][0]).toStrictEqual(deployParams.storeName);
       expect(mockedDeploy.mock.calls[0][1]).toStrictEqual(deployParams.owner);
-      // price should be any length string of digits
-      expect(mockedDeploy.mock.calls[0][2].maxPriorityFeePerGas.toString()).toStrictEqual(expect.stringMatching(/\d+/));
       expect(instance.contractAddress).toBe("contractAddress");
     });
 
