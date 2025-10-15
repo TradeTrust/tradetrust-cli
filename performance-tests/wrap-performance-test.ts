@@ -3,7 +3,7 @@ import { Output } from "../src/implementations/utils/disk";
 import { performance } from "perf_hooks";
 import { existsSync, mkdirSync, rmSync, promises } from "fs";
 import { SchemaId } from "@tradetrust-tt/tradetrust";
-import { join, parse, resolve } from "path";
+import { join, parse, resolve, relative, isAbsolute } from "path";
 
 const DEFAULT_NUMBER_OF_FILE = 2;
 const DEFAULT_ITERATION = 1;
@@ -20,7 +20,11 @@ const validateFilePath = async (filePath: string, baseDir: string): Promise<stri
   }
 
   const canonicalPath = await promises.realpath(resolvedFilePath);
-  if (!canonicalPath.startsWith(resolve(baseDir))) {
+  const canonicalBaseDir = await promises.realpath(resolve(baseDir));
+
+  // Use relative path check to prevent prefix matching false positives
+  const relativePath = relative(canonicalBaseDir, canonicalPath);
+  if (relativePath.startsWith("..") || isAbsolute(relativePath)) {
     throw new Error("File path is outside the allowed directory.");
   }
 
