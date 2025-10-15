@@ -1,16 +1,31 @@
 import { wrap } from "../src/implementations/wrap";
 import { Output } from "../src/implementations/utils/disk";
 import { performance } from "perf_hooks";
-import { existsSync, mkdirSync, rmSync, promises, constants } from "fs";
-import { access } from "fs/promises";
+import { existsSync, mkdirSync, rmSync, promises } from "fs";
 import { SchemaId } from "@tradetrust-tt/tradetrust";
-import { join, parse, resolve, normalize } from "path";
+import { join, parse, resolve } from "path";
 
 const DEFAULT_NUMBER_OF_FILE = 2;
 const DEFAULT_ITERATION = 1;
 const DEFAULT_FILE_PATH = join(__dirname, "unwrapped_document.json");
 const INPUT_UNWRAPPED_FILE_FOLDER = join(__dirname, "setup", "raw-documents");
 const OUTPUT_WRAPPED_FILE_FOLDER = join(__dirname, "setup", "wrapped-documents");
+
+// Shared helper function for file path validation
+const validateFilePath = async (filePath: string, baseDir: string): Promise<string> => {
+  const resolvedFilePath = resolve(filePath);
+
+  if (!existsSync(resolvedFilePath)) {
+    throw new Error("File does not exist.");
+  }
+
+  const canonicalPath = await promises.realpath(resolvedFilePath);
+  if (!canonicalPath.startsWith(resolve(baseDir))) {
+    throw new Error("File path is outside the allowed directory.");
+  }
+
+  return canonicalPath;
+};
 
 // Setup number of files
 const setup = async (filePath: string, numberOfFiles: number): Promise<void> => {
@@ -19,24 +34,8 @@ const setup = async (filePath: string, numberOfFiles: number): Promise<void> => 
   const fileExtension = parse(filePath).ext;
 
   try {
-    // Validate the source file path to prevent directory traversal
-    const resolvedFilePath = resolve(filePath);
-
-    // Ensure the source file path is within the allowed directory
-    if (!resolvedFilePath.startsWith(__dirname)) {
-      throw new Error("Source file path is outside the allowed directory.");
-    }
-
-    // Additional validation: ensure no path traversal attempts
-    const normalizedFilePath = normalize(resolvedFilePath);
-    if (normalizedFilePath !== resolvedFilePath || normalizedFilePath.includes("..")) {
-      throw new Error("Path traversal attempt detected in source file path.");
-    }
-
-    // Ensure the source file exists
-    if (!existsSync(resolvedFilePath)) {
-      throw new Error("Source file does not exist.");
-    }
+    // Validate and resolve the source file path
+    const canonicalPath = await validateFilePath(filePath, __dirname);
 
     existsSync(INPUT_UNWRAPPED_FILE_FOLDER) || mkdirSync(INPUT_UNWRAPPED_FILE_FOLDER, { recursive: true });
     for (let index = 0; index < numberOfFiles; index++) {
@@ -47,11 +46,8 @@ const setup = async (filePath: string, numberOfFiles: number): Promise<void> => 
         throw new Error("Unsafe file path detected.");
       }
 
-      // Ensure the file exists and is readable
-      await access(resolvedFilePath, constants.R_OK);
-
       // Copy the file safely using the validated path
-      await promises.copyFile(resolvedFilePath, outputPath);
+      await promises.copyFile(canonicalPath, outputPath);
     }
   } catch (e) {
     console.error(e);
@@ -73,22 +69,11 @@ const monitorWrapFeature = async (): Promise<void> => {
     const iteration: number = parseInt(process.argv[3], 10) || DEFAULT_ITERATION;
     const filePath: string = process.argv[4] || DEFAULT_FILE_PATH;
 
-    // Ensure the provided file path is absolute
-    const absoluteFilePath = resolve(filePath);
-
-    // Ensure the file path is within the allowed directory
-    if (!absoluteFilePath.startsWith(__dirname)) {
-      throw new Error("Unsafe file path detected.");
-    }
-
-    // Additional validation: ensure no path traversal attempts
-    const normalizedFilePath = normalize(absoluteFilePath);
-    if (normalizedFilePath !== absoluteFilePath || normalizedFilePath.includes("..")) {
-      throw new Error("Path traversal attempt detected in input file path.");
-    }
+    // Validate and resolve the input file path
+    const canonicalInputPath = await validateFilePath(filePath, __dirname);
 
     // Setup Number of Files
-    await setup(absoluteFilePath, numberOfFiles);
+    await setup(canonicalInputPath, numberOfFiles);
 
     const responseTime: Array<number> = [];
     for (let index = 0; index < iteration; index++) {
