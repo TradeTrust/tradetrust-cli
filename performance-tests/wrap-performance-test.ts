@@ -21,7 +21,7 @@ const setup = async (filePath: string, numberOfFiles: number): Promise<void> => 
   try {
     // Validate the source file path to prevent directory traversal
     const resolvedFilePath = resolve(filePath);
-    
+
     // Ensure the source file path is within the allowed directory
     if (!resolvedFilePath.startsWith(__dirname)) {
       throw new Error("Source file path is outside the allowed directory.");
@@ -29,7 +29,7 @@ const setup = async (filePath: string, numberOfFiles: number): Promise<void> => 
 
     // Additional validation: ensure no path traversal attempts
     const normalizedFilePath = normalize(resolvedFilePath);
-    if (normalizedFilePath !== resolvedFilePath || normalizedFilePath.includes('..')) {
+    if (normalizedFilePath !== resolvedFilePath || normalizedFilePath.includes("..")) {
       throw new Error("Path traversal attempt detected in source file path.");
     }
 
@@ -83,7 +83,7 @@ const monitorWrapFeature = async (): Promise<void> => {
 
     // Additional validation: ensure no path traversal attempts
     const normalizedFilePath = normalize(absoluteFilePath);
-    if (normalizedFilePath !== absoluteFilePath || normalizedFilePath.includes('..')) {
+    if (normalizedFilePath !== absoluteFilePath || normalizedFilePath.includes("..")) {
       throw new Error("Path traversal attempt detected in input file path.");
     }
 
