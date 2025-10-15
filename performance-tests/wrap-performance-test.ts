@@ -1,10 +1,10 @@
 import { wrap } from "../src/implementations/wrap";
 import { Output } from "../src/implementations/utils/disk";
 import { performance } from "perf_hooks";
-import { existsSync, mkdirSync, rmdirSync, promises, constants } from "fs";
+import { existsSync, mkdirSync, rmSync, promises, constants } from "fs";
 import { access } from "fs/promises";
 import { SchemaId } from "@tradetrust-tt/tradetrust";
-import { join, parse, resolve } from "path";
+import { join, parse, resolve, normalize } from "path";
 
 const DEFAULT_NUMBER_OF_FILE = 2;
 const DEFAULT_ITERATION = 1;
@@ -19,6 +19,25 @@ const setup = async (filePath: string, numberOfFiles: number): Promise<void> => 
   const fileExtension = parse(filePath).ext;
 
   try {
+    // Validate the source file path to prevent directory traversal
+    const resolvedFilePath = resolve(filePath);
+    
+    // Ensure the source file path is within the allowed directory
+    if (!resolvedFilePath.startsWith(__dirname)) {
+      throw new Error("Source file path is outside the allowed directory.");
+    }
+
+    // Additional validation: ensure no path traversal attempts
+    const normalizedFilePath = normalize(resolvedFilePath);
+    if (normalizedFilePath !== resolvedFilePath || normalizedFilePath.includes('..')) {
+      throw new Error("Path traversal attempt detected in source file path.");
+    }
+
+    // Ensure the source file exists
+    if (!existsSync(resolvedFilePath)) {
+      throw new Error("Source file does not exist.");
+    }
+
     existsSync(INPUT_UNWRAPPED_FILE_FOLDER) || mkdirSync(INPUT_UNWRAPPED_FILE_FOLDER, { recursive: true });
     for (let index = 0; index < numberOfFiles; index++) {
       const outputPath = resolve(INPUT_UNWRAPPED_FILE_FOLDER, `${fileName + (index + 1)}${fileExtension}`);
@@ -29,10 +48,10 @@ const setup = async (filePath: string, numberOfFiles: number): Promise<void> => 
       }
 
       // Ensure the file exists and is readable
-      await access(filePath, constants.R_OK);
+      await access(resolvedFilePath, constants.R_OK);
 
-      // Copy the file safely
-      await promises.copyFile(filePath, outputPath);
+      // Copy the file safely using the validated path
+      await promises.copyFile(resolvedFilePath, outputPath);
     }
   } catch (e) {
     console.error(e);
@@ -42,8 +61,8 @@ const setup = async (filePath: string, numberOfFiles: number): Promise<void> => 
 // Destroy generated folder
 const destroy = (): void => {
   console.info("Cleaning generated files from setup");
-  !existsSync(INPUT_UNWRAPPED_FILE_FOLDER) || rmdirSync(INPUT_UNWRAPPED_FILE_FOLDER, { recursive: true });
-  !existsSync(OUTPUT_WRAPPED_FILE_FOLDER) || rmdirSync(OUTPUT_WRAPPED_FILE_FOLDER, { recursive: true });
+  !existsSync(INPUT_UNWRAPPED_FILE_FOLDER) || rmSync(INPUT_UNWRAPPED_FILE_FOLDER, { recursive: true });
+  !existsSync(OUTPUT_WRAPPED_FILE_FOLDER) || rmSync(OUTPUT_WRAPPED_FILE_FOLDER, { recursive: true });
 };
 
 // Monitor batched wrap feature for the response time
@@ -62,8 +81,14 @@ const monitorWrapFeature = async (): Promise<void> => {
       throw new Error("Unsafe file path detected.");
     }
 
+    // Additional validation: ensure no path traversal attempts
+    const normalizedFilePath = normalize(absoluteFilePath);
+    if (normalizedFilePath !== absoluteFilePath || normalizedFilePath.includes('..')) {
+      throw new Error("Path traversal attempt detected in input file path.");
+    }
+
     // Setup Number of Files
-    await setup(filePath, numberOfFiles);
+    await setup(absoluteFilePath, numberOfFiles);
 
     const responseTime: Array<number> = [];
     for (let index = 0; index < iteration; index++) {
