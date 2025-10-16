@@ -16,7 +16,7 @@ const validateFilePath = async (filePath: string, baseDir: string): Promise<stri
   const resolvedFilePath = resolve(filePath);
 
   if (!existsSync(resolvedFilePath)) {
-    throw new Error("File does not exist.");
+    throw new Error(`Path validation failed: "${filePath}" does not exist`);
   }
 
   const canonicalPath = await promises.realpath(resolvedFilePath);
@@ -25,7 +25,7 @@ const validateFilePath = async (filePath: string, baseDir: string): Promise<stri
   // Use relative path check to prevent prefix matching false positives
   const relativePath = relative(canonicalBaseDir, canonicalPath);
   if (relativePath.startsWith("..") || isAbsolute(relativePath)) {
-    throw new Error("File path is outside the allowed directory.");
+    throw new Error(`Path validation failed: "${filePath}" is outside the allowed directory "${baseDir}"`);
   }
 
   return canonicalPath;
@@ -38,20 +38,12 @@ const setup = async (filePath: string, numberOfFiles: number): Promise<void> => 
   const fileExtension = parse(filePath).ext;
 
   try {
-    // Validate and resolve the source file path
-    const canonicalPath = await validateFilePath(filePath, __dirname);
-
     existsSync(INPUT_UNWRAPPED_FILE_FOLDER) || mkdirSync(INPUT_UNWRAPPED_FILE_FOLDER, { recursive: true });
     for (let index = 0; index < numberOfFiles; index++) {
       const outputPath = resolve(INPUT_UNWRAPPED_FILE_FOLDER, `${fileName + (index + 1)}${fileExtension}`);
 
-      // Sanitize the file path to prevent directory traversal
-      if (!outputPath.startsWith(INPUT_UNWRAPPED_FILE_FOLDER)) {
-        throw new Error("Unsafe file path detected.");
-      }
-
       // Copy the file safely using the validated path
-      await promises.copyFile(canonicalPath, outputPath);
+      await promises.copyFile(filePath, outputPath);
     }
   } catch (e) {
     console.error(e);
