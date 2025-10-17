@@ -1,16 +1,35 @@
 import { wrap } from "../src/implementations/wrap";
 import { Output } from "../src/implementations/utils/disk";
 import { performance } from "perf_hooks";
-import { existsSync, mkdirSync, rmdirSync, promises, constants } from "fs";
-import { access } from "fs/promises";
+import { existsSync, mkdirSync, rmSync, promises } from "fs";
 import { SchemaId } from "@tradetrust-tt/tradetrust";
-import { join, parse, resolve } from "path";
+import { join, parse, resolve, relative, isAbsolute } from "path";
 
 const DEFAULT_NUMBER_OF_FILE = 2;
 const DEFAULT_ITERATION = 1;
 const DEFAULT_FILE_PATH = join(__dirname, "unwrapped_document.json");
 const INPUT_UNWRAPPED_FILE_FOLDER = join(__dirname, "setup", "raw-documents");
 const OUTPUT_WRAPPED_FILE_FOLDER = join(__dirname, "setup", "wrapped-documents");
+
+// Shared helper function for file path validation
+const validateFilePath = async (filePath: string, baseDir: string): Promise<string> => {
+  const resolvedFilePath = resolve(filePath);
+
+  if (!existsSync(resolvedFilePath)) {
+    throw new Error(`Path validation failed: "${filePath}" does not exist`);
+  }
+
+  const canonicalPath = await promises.realpath(resolvedFilePath);
+  const canonicalBaseDir = await promises.realpath(resolve(baseDir));
+
+  // Use relative path check to prevent prefix matching false positives
+  const relativePath = relative(canonicalBaseDir, canonicalPath);
+  if (relativePath.startsWith("..") || isAbsolute(relativePath)) {
+    throw new Error(`Path validation failed: "${filePath}" is outside the allowed directory "${baseDir}"`);
+  }
+
+  return canonicalPath;
+};
 
 // Setup number of files
 const setup = async (filePath: string, numberOfFiles: number): Promise<void> => {
@@ -23,15 +42,7 @@ const setup = async (filePath: string, numberOfFiles: number): Promise<void> => 
     for (let index = 0; index < numberOfFiles; index++) {
       const outputPath = resolve(INPUT_UNWRAPPED_FILE_FOLDER, `${fileName + (index + 1)}${fileExtension}`);
 
-      // Sanitize the file path to prevent directory traversal
-      if (!outputPath.startsWith(INPUT_UNWRAPPED_FILE_FOLDER)) {
-        throw new Error("Unsafe file path detected.");
-      }
-
-      // Ensure the file exists and is readable
-      await access(filePath, constants.R_OK);
-
-      // Copy the file safely
+      // Copy the file safely using the validated path
       await promises.copyFile(filePath, outputPath);
     }
   } catch (e) {
@@ -42,8 +53,8 @@ const setup = async (filePath: string, numberOfFiles: number): Promise<void> => 
 // Destroy generated folder
 const destroy = (): void => {
   console.info("Cleaning generated files from setup");
-  !existsSync(INPUT_UNWRAPPED_FILE_FOLDER) || rmdirSync(INPUT_UNWRAPPED_FILE_FOLDER, { recursive: true });
-  !existsSync(OUTPUT_WRAPPED_FILE_FOLDER) || rmdirSync(OUTPUT_WRAPPED_FILE_FOLDER, { recursive: true });
+  !existsSync(INPUT_UNWRAPPED_FILE_FOLDER) || rmSync(INPUT_UNWRAPPED_FILE_FOLDER, { recursive: true });
+  !existsSync(OUTPUT_WRAPPED_FILE_FOLDER) || rmSync(OUTPUT_WRAPPED_FILE_FOLDER, { recursive: true });
 };
 
 // Monitor batched wrap feature for the response time
@@ -54,16 +65,11 @@ const monitorWrapFeature = async (): Promise<void> => {
     const iteration: number = parseInt(process.argv[3], 10) || DEFAULT_ITERATION;
     const filePath: string = process.argv[4] || DEFAULT_FILE_PATH;
 
-    // Ensure the provided file path is absolute
-    const absoluteFilePath = resolve(filePath);
-
-    // Ensure the file path is within the allowed directory
-    if (!absoluteFilePath.startsWith(__dirname)) {
-      throw new Error("Unsafe file path detected.");
-    }
+    // Validate and resolve the input file path
+    const canonicalInputPath = await validateFilePath(filePath, __dirname);
 
     // Setup Number of Files
-    await setup(filePath, numberOfFiles);
+    await setup(canonicalInputPath, numberOfFiles);
 
     const responseTime: Array<number> = [];
     for (let index = 0; index < iteration; index++) {
