@@ -86,7 +86,7 @@ export const supportedNetwork: {
   },
   [NetworkCmdName.XDCApothem]: {
     explorer: "https://apothem.xdcscan.io",
-    provider: jsonRpcProvider("https://rpc.ankr.com/xdc_testnet"),
+    provider: jsonRpcProvider("https://rpc.apothem.network"),
     networkId: 51,
     networkName: NetworkCmdName.XDCApothem,
     currency: "XDC",
