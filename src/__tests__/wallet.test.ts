@@ -9,6 +9,9 @@ jest.mock("inquirer");
 
 const promptMock = mocked(prompt);
 
+// Note: This is a dummy password used only for testing mock wallet encryption/decryption.
+const mockedPassword = "password123";
+
 describe("wallet", () => {
   // increase timeout because ethers is throttling
   jest.setTimeout(30000);
@@ -29,7 +32,7 @@ describe("wallet", () => {
     it("should work when user consent correctly", async () => {
       const signaleSuccessSpy = jest.spyOn(signale, "success");
       promptMock.mockResolvedValueOnce({ ack: "yes" }); // what the user type
-      promptMock.mockResolvedValueOnce({ password: "password123" }); // wallet password
+      promptMock.mockResolvedValueOnce({ password: mockedPassword }); // wallet password
       await decrypt({
         inputFile: path.resolve("src", "implementations", "utils", "__tests__", "wallet.json").toString(),
         yes: false,
@@ -59,7 +62,7 @@ describe("wallet", () => {
     });
     it("should work when user consent automatically", async () => {
       const signaleSuccessSpy = jest.spyOn(signale, "success");
-      promptMock.mockResolvedValueOnce({ password: "password123" }); // wallet password
+      promptMock.mockResolvedValueOnce({ password: mockedPassword }); // wallet password
       await decrypt({
         inputFile: path.resolve("src", "implementations", "utils", "__tests__", "wallet.json").toString(),
         yes: true,

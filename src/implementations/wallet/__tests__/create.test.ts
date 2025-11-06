@@ -4,7 +4,9 @@ import tmp from "tmp";
 import fs from "fs";
 import { ethers } from "ethers";
 jest.mock("inquirer");
-const password = "password123";
+
+// Note: This is a dummy password used only for testing mock wallet encryption/decryption.
+const mockedPassword = "password123";
 
 // assigning the mock so that we get correct typing
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -18,7 +20,7 @@ describe("create wallet", () => {
     promptMock.mockRestore();
   });
   it("shoud save the wallet into the provided path", async () => {
-    promptMock.mockReturnValue({ password });
+    promptMock.mockReturnValue({ password: mockedPassword });
     const file = tmp.fileSync();
     await create({ outputFile: file.name, progress: () => void 0 });
     const walletAsString = fs.readFileSync(file.name, "utf-8");
@@ -45,7 +47,7 @@ describe("create wallet", () => {
       })
     );
 
-    const decryptedWallet = await ethers.Wallet.fromEncryptedJson(walletAsString, password);
+    const decryptedWallet = await ethers.Wallet.fromEncryptedJson(walletAsString, mockedPassword);
     expect(decryptedWallet.address).toStrictEqual(expect.any(String));
     expect(decryptedWallet.privateKey).toStrictEqual(expect.any(String));
   });
