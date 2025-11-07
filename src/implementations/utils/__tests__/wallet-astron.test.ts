@@ -11,6 +11,10 @@ const promptMock: jest.Mock = prompt;
 const privateKey = "0xcd27dc84c82c5814e7edac518edd5f263e7db7f25adb7a1afe13996a95583cf2";
 const walletAddress = "0xB26B4941941C51a4885E5B7D3A1B861E54405f90";
 
+// Note: This is a dummy password used only for testing mock wallet encryption/decryption.
+const mockedPassword = "password123";
+const mockedInvalidPassword = "invalid";
+
 describe("wallet", () => {
   // increase timeout because ethers is throttling
   jest.setTimeout(30_000);
@@ -48,7 +52,7 @@ describe("wallet", () => {
     expect(wallet.privateKey).toStrictEqual(privateKey);
   });
   it("should return the wallet when providing an encrypted wallet", async () => {
-    promptMock.mockReturnValue({ password: "password123" });
+    promptMock.mockReturnValue({ password: mockedPassword });
 
     const wallet = await getWalletOrSigner({
       network: "astron",
@@ -59,7 +63,7 @@ describe("wallet", () => {
     expect(wallet.privateKey).toStrictEqual(privateKey);
   });
   it("should throw an error when the wallet password is invalid", async () => {
-    promptMock.mockReturnValue({ password: "invalid" });
+    promptMock.mockReturnValue({ password: mockedInvalidPassword });
 
     await expect(
       getWalletOrSigner({

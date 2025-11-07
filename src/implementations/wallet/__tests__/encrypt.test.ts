@@ -9,8 +9,9 @@ jest.mock("inquirer");
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 const promptMock: jest.Mock = prompt;
+// Note: This is a dummy password used only for testing mock wallet encryption/decryption.
+const mockedPassword = "password123";
 const privateKey = "0xcd27dc84c82c5814e7edac518edd5f263e7db7f25adb7a1afe13996a95583cf2";
-const password = "password123";
 
 describe("create wallet", () => {
   // increase timeout because ethers is throttling
@@ -19,7 +20,7 @@ describe("create wallet", () => {
     promptMock.mockRestore();
   });
   it("shoud throw an error when no key is provided", async () => {
-    promptMock.mockReturnValue({ password });
+    promptMock.mockReturnValue({ password: mockedPassword });
     const file = tmp.fileSync();
     await expect(encrypt({ outputFile: file.name, progress: () => void 0 })).rejects.toStrictEqual(
       new Error("No private key found in OA_PRIVATE_KEY, key, key-file, please supply at least one")
@@ -27,7 +28,7 @@ describe("create wallet", () => {
   });
 
   it("shoud encrypt the wallet when the key is provided with the key option", async () => {
-    promptMock.mockReturnValue({ password });
+    promptMock.mockReturnValue({ password: mockedPassword });
     const file = tmp.fileSync();
     await encrypt({ key: privateKey, outputFile: file.name, progress: () => void 0 });
     const walletAsString = fs.readFileSync(file.name, "utf-8");
@@ -54,7 +55,7 @@ describe("create wallet", () => {
       })
     );
 
-    const decryptedWallet = await ethers.Wallet.fromEncryptedJson(walletAsString, password);
+    const decryptedWallet = await ethers.Wallet.fromEncryptedJson(walletAsString, mockedPassword);
     expect(decryptedWallet.address).toBe("0xB26B4941941C51a4885E5B7D3A1B861E54405f90");
     expect(decryptedWallet.privateKey).toStrictEqual(privateKey);
   });
