@@ -22,6 +22,9 @@ const getSupportedNetworkMock = getSupportedNetwork as jest.MockedFunction<typeo
 // Note: This is a dummy password used only for testing mock wallet encryption/decryption.
 const mockedPassword = "password123";
 const mockedInvalidPassword = "invalid";
+
+// Note: Dummy test wallets — private keys for local development and CI/CD only.
+// These wallets are not for production and hold no funds or value on any network.
 const privateKey = "0xcd27dc84c82c5814e7edac518edd5f263e7db7f25adb7a1afe13996a95583cf2";
 const walletAddress = "0xB26B4941941C51a4885E5B7D3A1B861E54405f90";
 
