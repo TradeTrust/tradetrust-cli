@@ -118,25 +118,15 @@
   "eslintConfig": {
     "parser": "@typescript-eslint/parser",
     "env": {
-      "browser": true,
-      "jest": true
+      "browser": true
     },
     "extends": [
       "plugin:@typescript-eslint/recommended",
-      "plugin:jest/all",
       "plugin:prettier/recommended"
     ],
     "parserOptions": {
       "ecmaVersion": 2018,
-      "sourceType": "module",
-      "ecmaFeatures": {
-        "jsx": true
-      }
-    },
-    "settings": {
-      "react": {
-        "version": "detect"
-      }
+      "sourceType": "module"
     },
     "rules": {
       "@typescript-eslint/explicit-function-return-type": [
@@ -148,11 +138,28 @@
       ],
       "@typescript-eslint/no-explicit-any": "off",
       "@typescript-eslint/no-empty-function": "off",
-      "jest/prefer-expect-assertions": "off",
-      "jest/no-hooks": "off",
-      "jest/prefer-strict-equal": "off",
       "array-callback-return": "error"
-    }
+    },
+    "overrides": [
+      {
+        "files": [
+          "**/*.test.ts",
+          "**/*.spec.ts",
+          "**/__tests__/**/*.ts"
+        ],
+        "env": {
+          "jest": true
+        },
+        "extends": [
+          "plugin:jest/all"
+        ],
+        "rules": {
+          "jest/prefer-expect-assertions": "off",
+          "jest/no-hooks": "off",
+          "jest/prefer-strict-equal": "off"
+        }
+      }
+    ]
   },
   "prettier": {
     "printWidth": 120
