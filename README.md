@@ -1,5 +1,8 @@
 # TradeTrust (CLI)
 
+> ⚠️ This CLI is for development work only. It is not recommended for production use.
+> For production, please integrate the TrustVC library.
+
 This CLI tool in the [TradeTrust CLI](https://github.com/TradeTrust/tradetrust-cli) repository turns .json documents into any TradeTrust verifiable documents. It applies the OpenAttestation algorithm to produce a hash of the json document and then creates a file with the data and proof of integrity.
 
 ## Installation
