@@ -1,3 +1,13 @@
+# DEPRECATED 🚨
+
+[![Unmaintained](https://img.shields.io/badge/status-unmaintained-red)](https://shields.io/)
+
+> This repository has been **deprecated** and is no longer maintained.
+>
+> Please use **[@trustvc/trustvc-cli](https://www.npmjs.com/package/@trustvc/trustvc-cli)** instead.
+>
+> The new CLI provides the same functionality with ongoing support and updates.
+
 # TradeTrust (CLI)
 
 > ⚠️ This CLI is for development work only. It is not recommended for production use.
